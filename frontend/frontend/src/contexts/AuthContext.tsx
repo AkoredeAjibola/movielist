@@ -64,20 +64,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include",
+        credentials: "include", // Ensure cookies are sent with the request
       });
 
-      if (!response.ok) throw new Error("Login failed");
-      const userData = await response.json();
-
-
-      if (userData.token) {
-        localStorage.setItem("token", userData.token); // Save token in localStorage
-        setUser(userData); // Update the user state
-        navigate("/");
-      } else {
-        console.error("Token missing in response");
+      if (!response.ok) {
+        throw new Error("Login failed");
       }
+
+      const data = await response.json();
+      console.log("Login response:", data);
+
+      // Save token in localStorage (if needed for frontend use)
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        console.log("Token saved successfully");
+      }
+
+      // Update frontend state
+      setUser(data.user);
+      navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
     }
