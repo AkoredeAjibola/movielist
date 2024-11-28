@@ -57,26 +57,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
 
+
   const login = async (email: string, password: string) => {
     const backendUrl = "https://movielist-nl59.onrender.com"
-    try {
-      const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-        credentials: "include",
-      });
+    const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      credentials: "include", // Include cookies in the request
+    });
 
-      if (!response.ok) throw new Error("Login failed");
-
-      const userData = await response.json();
-      setUser(userData);
-      navigate("/");
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw error;
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("token", data.token); // Save the token in localStorage
+    } else {
+      console.error("Login failed:", await response.text());
     }
   };
+
+
 
 
 
