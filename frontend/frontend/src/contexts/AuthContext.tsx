@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const checkAuth = async () => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = "https://movielist-nl59.onrender.com";
     // console.log("Backend URL:", backendUrl);   // Update to use VITE_ prefix in Vite
     try {
       const response = await fetch(`${backendUrl}/api/v1/auth/authCheck`, {
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const login = async (email: string, password: string) => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = "https://movielist-nl59.onrender.com"
     try {
       const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
         method: "POST",
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signup = async (email: string, password: string, username: string) => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = "https://movielist-nl59.onrender.com";
     try {
       const response = await fetch(`${backendUrl}/api/v1/auth/signup`, {
         method: "POST",
@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = "https://movielist-nl59.onrender.com";
     try {
       await fetch(`${backendUrl}/api/v1/auth/logout`, { method: "POST" });
       setUser(null);
