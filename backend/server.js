@@ -19,6 +19,8 @@ const app = express();
 app.use(cors({
 	origin: "https://movielist-1-6tpu.onrender.com",  // Your frontend URL (adjust if needed)
 	credentials: true,  // Allow credentials (cookies, etc.)
+	methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+	allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
   }));
 
 const PORT = ENV_VARS.PORT;
