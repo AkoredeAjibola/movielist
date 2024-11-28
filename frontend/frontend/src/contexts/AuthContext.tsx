@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       if (!response.ok) throw new Error("Login failed");
@@ -76,6 +77,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       throw error;
     }
   };
+
+
 
   const signup = async (email: string, password: string, username: string) => {
     const backendUrl = "https://movielist-nl59.onrender.com";
@@ -109,6 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       throw error;
     }
   };
+
 
   return (
     <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
