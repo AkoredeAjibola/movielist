@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon backend/server.js",
-    "start": "cross-env NODE_ENV=production node backend/server.js",
+    "dev": "NODE_ENV=development nodemon backend/server.js",  
+    "start": "NODE_ENV=production node backend/server.js",    
     "build": "echo 'No build step for backend'"
   },
   "keywords": [],
@@ -27,7 +27,6 @@
   "devDependencies": {
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "cross-env": "^7.0.3",
     "nodemon": "^3.1.4"
   }
 }
