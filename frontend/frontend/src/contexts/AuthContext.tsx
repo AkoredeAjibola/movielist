@@ -80,17 +80,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Login response:", data);
 
       // Save token in localStorage (if needed for frontend use)
-      if (data.success && data.token) {
-        // Save the token to localStorage (make sure it's properly stored)
-        localStorage.setItem("token", data.token);
-        console.log("Token saved successfully");
-      }
-
+      localStorage.setItem("token", data.token);
+      console.log("Token saved successfully");
       // Update frontend state
       setUser(data.user);
       navigate("/");
     } catch (error) {
       console.error("Login failed:", error);
+      throw error;
     }
   };
 
