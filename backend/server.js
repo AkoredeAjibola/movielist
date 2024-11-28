@@ -17,7 +17,7 @@ import { protectRoute } from "./middleware/protectRoute.js";
 const app = express();
 
 app.use(cors({
-	origin: "http://localhost:8080",  // Your frontend URL (adjust if needed)
+	origin: "https://movielist-1-6tpu.onrender.com/",  // Your frontend URL (adjust if needed)
 	credentials: true,  // Allow credentials (cookies, etc.)
   }));
 
