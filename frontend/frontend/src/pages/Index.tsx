@@ -111,15 +111,18 @@ const Index: React.FC = () => {
   // Fetch featured movie using trending movies as source
   const fetchFeaturedMovie = async () => {
     try {
+      const token = localStorage.getItem("token"); // Retrieve token from localStorage
       const response = await fetch("https://movielist-nl59.onrender.com/api/v1/movie/trending", {
-        credentials: "include",
+        credentials: "include", // Ensure cookies are included
         headers: {
+          "Authorization": `Bearer ${token}`, // Include the token in the Authorization header
           "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
         },
       });
       const data = await response.json();
+      console.log("API response:", data); // Log to check the response
 
-      console.log("API response:", data); // Log to check the structure
+
 
       // Check if results exists and has at least one item
       if (data.success && data.content) {
