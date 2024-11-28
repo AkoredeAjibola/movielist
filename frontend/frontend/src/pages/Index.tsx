@@ -83,8 +83,10 @@ const Index: React.FC = () => {
     endpoint: string,
     setter: React.Dispatch<React.SetStateAction<Movie[]>>
   ): Promise<void> => {
+    const token = localStorage.getItem("token");
+
     try {
-      const token = localStorage.getItem("token"); // Retrieve the token from local storage (if applicable)
+
 
       const response = await fetch(`${BASE_URL}/${endpoint}`, {
         credentials: "include", // Include cookies in the request
