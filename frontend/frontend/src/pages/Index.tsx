@@ -90,7 +90,7 @@ const Index: React.FC = () => {
         credentials: "include", // Include cookies in the request
         headers: {
           // If you're using JWT, attach it to the Authorization header
-          Authorization: token ? `Bearer ${token}` : "", // Add Bearer token to the Authorization header if token exists
+          "Authorization": token ? `Bearer ${token}` : "", // Add Bearer token to the Authorization header if token exists
           "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
         },
       });
