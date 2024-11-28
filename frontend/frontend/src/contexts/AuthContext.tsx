@@ -68,16 +68,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (!response.ok) throw new Error("Login failed");
-
       const userData = await response.json();
-      localStorage.setItem("token", userData.token); // Save the token in localStorage
-      setUser(userData);
-      navigate("/");
+
+
+      if (userData.token) {
+        localStorage.setItem("token", userData.token); // Save token in localStorage
+        setUser(userData); // Update the user state
+        navigate("/");
+      } else {
+        console.error("Token missing in response");
+      }
     } catch (error) {
       console.error("Login failed:", error);
-      throw error;
     }
   };
+
 
 
 
@@ -95,7 +100,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       const userData = await response.json();
       setUser(userData);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error("Signup failed:", error);
       throw error;
