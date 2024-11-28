@@ -33,28 +33,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const response = await fetch(`${backendUrl}/api/v1/auth/authCheck`, {
         method: "GET",
-        credentials: "include", // Include cookies (if using JWT in cookies)
+        credentials: "include", // Include cookies
         headers: {
           "Cache-Control": "no-cache, no-store, must-revalidate", // Disable caching
         },
       });
 
-      const text = await response.text(); // Get the raw response as text
-      //console.log("Response from authCheck:", text); // Log it to see what's returned
+      const text = await response.text();
+      console.log("Response from authCheck:", text); // Log the raw response
 
       if (!response.ok) {
         throw new Error("Auth check failed");
       }
 
-      // If the response is JSON, parse it
-      const data = JSON.parse(text);
-      setUser(data);  // Assuming the user data is returned
+      try {
+        const data = JSON.parse(text); // Parse response as JSON
+        setUser(data); // Assuming the user data is returned
+      } catch (error) {
+        console.error("Failed to parse JSON:", error, "Raw text:", text);
+        throw new Error("Invalid JSON response from server");
+      }
     } catch (error) {
       console.error("Auth check failed:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
 
 
   const login = async (email: string, password: string) => {
