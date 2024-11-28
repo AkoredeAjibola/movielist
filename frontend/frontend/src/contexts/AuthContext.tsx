@@ -22,15 +22,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
-    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     // console.log("Backend URL:", backendUrl);   // Update to use VITE_ prefix in Vite
     try {
-      const response = await fetch("http://localhost:3000/api/v1/auth/authCheck", {
+      const response = await fetch(`${backendUrl}/api/v1/auth/authCheck`, {
         method: "GET",
         credentials: "include", // Include cookies (if using JWT in cookies)
         headers: {
@@ -57,8 +58,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   const login = async (email: string, password: string) => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     try {
-      const response = await fetch("http://localhost:3000/api/v1/auth/login", {
+      const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -76,9 +78,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signup = async (email: string, password: string, username: string) => {
-
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     try {
-      const response = await fetch("http://localhost:3000/api/v1/auth/signup", {
+      const response = await fetch(`${backendUrl}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, username }),
@@ -97,8 +99,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     try {
-      await fetch("http://localhost:3000/api/v1/auth/logout", { method: "POST" });
+      await fetch(`${backendUrl}/api/v1/auth/logout`, { method: "POST" });
       setUser(null);
       navigate("/login");
     } catch (error) {
