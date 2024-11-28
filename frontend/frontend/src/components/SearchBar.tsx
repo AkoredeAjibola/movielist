@@ -52,7 +52,7 @@ export const SearchBar = ({
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/search/movie/${query}`, {
+      const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/search/movie/${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

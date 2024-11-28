@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAuth = async () => {
     const backendUrl = "https://movielist-nl59.onrender.com";
-    // console.log("Backend URL:", backendUrl);   // Update to use VITE_ prefix in Vite
+
     try {
       const response = await fetch(`${backendUrl}/api/v1/auth/authCheck`, {
         method: "GET",

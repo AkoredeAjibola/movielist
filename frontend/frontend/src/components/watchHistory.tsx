@@ -15,7 +15,7 @@ export const WatchHistory: React.FC = () => {
     const fetchHistory = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:3000/api/v1/watch-history', {
+            const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history', {
                 credentials: 'include',
             });
             const data = await response.json();
@@ -34,7 +34,7 @@ export const WatchHistory: React.FC = () => {
 
     const deleteHistoryItem = async (id: string) => {
         try {
-            await fetch(`http://localhost:3000/api/v1/watch-history/${id}`, {
+            await fetch(`https://movielist-nl59.onrender.com/api/v1/watch-history/${id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });

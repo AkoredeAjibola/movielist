@@ -20,7 +20,7 @@ const RemindersPage: React.FC = () => {
     const fetchReminders = async () => {
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/api/v1/reminder/", {
+            const response = await fetch("https://movielist-nl59.onrender.com/api/v1/reminder/", {
                 credentials: "include",
             });
             const data = await response.json();
@@ -41,7 +41,7 @@ const RemindersPage: React.FC = () => {
     const deleteReminder = async (id: string) => {
         console.log("Attempting to delete reminder with ID:", id); // Debug log
         try {
-            const response = await fetch(`http://localhost:3000/api/v1/reminder/${id}`, {
+            const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/reminder/${id}`, {
                 method: "DELETE",
                 credentials: "include", // Include cookies for authentication
             });

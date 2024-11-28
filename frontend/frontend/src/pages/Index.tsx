@@ -63,7 +63,7 @@ import { MovieCard } from "@/components/MovieCard";
 import { Navigation } from "@/components/Navigation";
 import { Movie } from "@/components/HeroSection";
 
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = "https://movielist-nl59.onrender.com"
 
 
 
@@ -111,7 +111,7 @@ const Index: React.FC = () => {
   // Fetch featured movie using trending movies as source
   const fetchFeaturedMovie = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/v1/movie/trending", {
+      const response = await fetch("https://movielist-nl59.onrender.com/api/v1/movie/trending", {
         credentials: "include",
         headers: {
           "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching

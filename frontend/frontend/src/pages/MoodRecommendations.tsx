@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MoodSelector } from "@/components/MoodSelector";
 import { MovieCard } from "@/components/MovieCard";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://movielist-nl59.onrender.com";
 export const MoodRecommendations: React.FC = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
