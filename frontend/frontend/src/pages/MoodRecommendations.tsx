@@ -14,12 +14,17 @@ export const MoodRecommendations: React.FC = () => {
     setError("");
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/api/v1/mood/${mood}`, {
         credentials: "include", // Include cookies
         headers: {
           "Content-Type": "application/json",
+          // If you're using JWT, attach it to the Authorization header
+          "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+          "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
         },
-      });
+      },
+      );
 
       const data = await response.json();
 
@@ -51,7 +56,7 @@ export const MoodRecommendations: React.FC = () => {
               key={movie.id}
               id={movie.id}
               title={movie.title}
-              poster_path={movie.poster_path}  // Use posterPath instead of poster_path
+              poster_path={movie.poster_path}
               inWatchlist={false}
               onWatchlistToggle={() => { }}
             />

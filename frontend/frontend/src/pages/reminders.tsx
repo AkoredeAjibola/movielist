@@ -20,8 +20,14 @@ const RemindersPage: React.FC = () => {
     const fetchReminders = async () => {
         setLoading(true);
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch("https://movielist-nl59.onrender.com/api/v1/reminder/", {
                 credentials: "include",
+                headers: {
+                    // If you're using JWT, attach it to the Authorization header
+                    "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                },
             });
             const data = await response.json();
 
@@ -41,9 +47,15 @@ const RemindersPage: React.FC = () => {
     const deleteReminder = async (id: string) => {
         console.log("Attempting to delete reminder with ID:", id); // Debug log
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/reminder/${id}`, {
                 method: "DELETE",
                 credentials: "include", // Include cookies for authentication
+                headers: {
+                    // If you're using JWT, attach it to the Authorization header
+                    "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                },
             });
 
             if (!response.ok) {

@@ -17,8 +17,16 @@ const WatchHistoryPage: React.FC = () => {
   const fetchHistory = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watch-history", {
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          // If you're using JWT, attach it to the Authorization header
+          "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+          "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+        },
+
       });
       const data = await response.json();
 
@@ -36,9 +44,16 @@ const WatchHistoryPage: React.FC = () => {
 
   const deleteHistoryItem = async (id: string) => {
     try {
+      const token = localStorage.getItem("token");
       await fetch(`https://movielist-nl59.onrender.com/api/v1/watch-history/${id}`, {
         method: "DELETE",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          // If you're using JWT, attach it to the Authorization header
+          "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+          "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+        },
       });
       setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id));
     } catch (err) {
