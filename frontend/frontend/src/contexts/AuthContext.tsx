@@ -31,11 +31,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const backendUrl = "https://movielist-nl59.onrender.com";
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${backendUrl}/api/v1/auth/authCheck`, {
         method: "GET",
         credentials: "include", // Include cookies
         headers: {
           "Cache-Control": "no-cache, no-store, must-revalidate", // Disable caching
+          "Authorization": `Bearer ${token}`,
         },
       });
 
@@ -139,6 +141,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

@@ -206,6 +206,7 @@ const Index: React.FC = () => {
           {loading ? (
             <p className="text-center text-neutral-200">Loading trending movies...</p>
           ) : (
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {Array.isArray(trendingMovies) && trendingMovies.length > 0 ? (
                 trendingMovies.map((movie) => (
@@ -218,6 +219,7 @@ const Index: React.FC = () => {
                     onWatchlistToggle={() => { }}
                   />
                 ))
+
               ) : (
                 <p>No trending movies available</p>  // Fallback message if the data is not an array or empty
               )}
