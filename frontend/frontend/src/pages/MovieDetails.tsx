@@ -16,7 +16,7 @@ const MovieDetails: React.FC = () => {
     const fetchMovieDetails = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}`);
+            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/details`);
             const data = await response.json();
             if (data.success) {
                 setMovieDetails(data.content); // Set movie details
@@ -33,7 +33,14 @@ const MovieDetails: React.FC = () => {
     // Fetch similar movies
     const fetchSimilarMovies = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`);
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`, {
+                credentials: "include", // Ensure cookies are included
+                headers: {
+                    "Authorization": `Bearer ${token}`, // Include the token in the Authorization header
+                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setSimilarMovies(data.content.results || []); // Set similar movies
@@ -60,6 +67,11 @@ const MovieDetails: React.FC = () => {
                 <div>
                     <h1 className="text-3xl font-bold">{movieDetails.title}</h1>
                     <p className="text-neutral-400">{movieDetails.overview}</p>
+                    <p className="text-neutral-400">{movieDetails.genres}</p>
+                    <p className="text-neutral-400">{movieDetails.releaseDate}</p>
+
+
+
                     {/* Add more details like genres, release date, etc. */}
                 </div>
             ) : (

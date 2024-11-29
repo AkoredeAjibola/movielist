@@ -138,6 +138,7 @@ const Index: React.FC = () => {
             backdropPath: movie.backdrop_path, // Correctly map the property name
             poster_path: movie.poster_path, // Correctly map the property name
             genres: [], // You can update this if you have genre data or handle it differently
+            releaseDate: movie.releaseDate
           });
         } else {
           throw new Error("Movie data is missing required properties.");
