@@ -30,7 +30,7 @@ export const WatchReminder = ({
 
     try {
       const reminderDate = date.toISOString();
-      await fetch('http://localhost:3000/api/v1/reminder/set', {
+      await fetch('https://movielist-nl59.onrender.com/api/v1/reminder/set', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
