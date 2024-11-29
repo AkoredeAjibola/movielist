@@ -65,9 +65,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     const backendUrl = "https://movielist-nl59.onrender.com"
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${backendUrl}/api/v1/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
         body: JSON.stringify({ email, password }),
         credentials: "include", // Ensure cookies are sent with the request
       });

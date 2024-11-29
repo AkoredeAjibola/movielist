@@ -13,6 +13,7 @@ import { SearchBar } from "./components/SearchBar";
 import WatchHistoryPage from "./pages/watchHistory";
 import RemindersPage from "./pages/reminders";
 import WatchlistPage from "./pages/WatchList";
+import MovieDetails from "./pages/MovieDetails";
 
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/watchhistory" element={<WatchHistoryPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="/reminders" element={<RemindersPage />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
 
 
 
