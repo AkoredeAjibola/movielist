@@ -29,16 +29,23 @@ export const WatchReminder = ({
 
 
     try {
+      const token = localStorage.getItem("token");
       const reminderDate = date.toISOString();
       await fetch('https://movielist-nl59.onrender.com/api/v1/reminder/set', {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Include the token in the Authorization header
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+
+        },
+        credentials: "include",
         body: JSON.stringify({
           movieId,            // movieId to identify which movie
           movieTitle,         // Send movieTitle for better clarity on reminder
           reminderDate,       // The date formatted as ISO string
         }),
-        credentials: "include",
+
       });
 
       toast({

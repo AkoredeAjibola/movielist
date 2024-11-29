@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, Play } from "lucide-react";
 
 export interface Movie {
+  releaseDate: string;
   id: string;
   title: string;
   overview: string;
