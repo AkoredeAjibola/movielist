@@ -138,37 +138,38 @@ export const MovieCard = ({
         />
       </CardHeader>
 
-      {/* Icons positioned on the top-right */}
       <div className="absolute right-2 top-2 flex gap-2">
-        {/* Watchlist toggle button */}
         <Button
           size="icon"
           variant="secondary"
-          className="h-8 w-8"
-          onClick={handleWatchlistToggle}  // Toggle watchlist state
+          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+          onClick={() => setShowReminder(true)}
+        >
+          <span className="sr-only">Set reminder</span>
+          🔔
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+          onClick={handleWatchlistToggle}  // Toggle watchlist state on click
         >
           <Bookmark className={isInWatchlist ? "fill-current" : ""} />
           <span className="sr-only">
             {isInWatchlist ? "Remove from watchlist" : "Add to watchlist"}
           </span>
         </Button>
-
-        {/* Reminder toggle button */}
-        <Button
-          size="icon"
-          variant="secondary"
-          className="h-8 w-8"
-          onClick={handleReminderToggle}  // Handle reminder click
-        >
-          <span className="sr-only">Set reminder</span>
-          🔔
-        </Button>
       </div>
-
       <CardContent className="p-4">
         <h3 className="font-semibold">{title}</h3>
       </CardContent>
+      {showReminder && (
+        <WatchReminder
+          movieId={id}
+          movieTitle={title}
+          onClose={() => setShowReminder(false)}
+        />
+      )}
     </Card>
   );
-
 };
