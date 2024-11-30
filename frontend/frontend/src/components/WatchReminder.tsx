@@ -89,7 +89,7 @@
 
 
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -113,7 +113,38 @@ export const WatchReminder = ({
   onClose,
 }: WatchReminderProps) => {
   const [dateTime, setDateTime] = useState<Date | undefined>(new Date());
+  const [existingReminder, setExistingReminder] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(
+          "https://movielist-nl59.onrender.com/api/v1/reminder/",
+          {
+            credentials: "include",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          const reminderExists = data.reminders.some(
+            (reminder) => reminder.movieId === movieId
+          );
+          setExistingReminder(reminderExists);
+        }
+      } catch (error) {
+        console.error("Error fetching reminders:", error);
+      }
+    };
+
+    fetchReminders();
+  }, [movieId]);
+
 
   const handleSetReminder = async () => {
     if (!dateTime) return;
