@@ -20,11 +20,17 @@ const MovieDetailsPage: React.FC = () => {
         const token = localStorage.getItem("token");
 
         try {
+
             const response = await fetch(`${BASE_URL}/${endpoint}`, {
                 headers: {
                     Authorization: token ? `Bearer ${token}` : "",
                 },
             });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const data = await response.json();
             console.log("Similar Movies API response:", data);
 
@@ -57,7 +63,6 @@ const MovieDetailsPage: React.FC = () => {
 
             if (data.success) {
                 setMovieDetails(data.content);
-                setSimilarMovies(data.content.similarMovies || []);
             } else {
                 console.error("Failed to fetch movie details:", data.message);
             }
