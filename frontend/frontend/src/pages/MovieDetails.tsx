@@ -92,34 +92,66 @@ const MovieDetailsPage: React.FC = () => {
     }
 
     return (
-        <div className="container py-8">
+        <div>
             <Navigation />
-            <h2 className="text-3xl font-semibold">{movieDetails.title}</h2>
-            <p>{movieDetails.overview}</p>
-
-            {/* Movie Poster and Play Button */}
-            <div className="mt-4">
+            {/* Full-screen Movie Poster */}
+            <div className="relative">
                 <img
-                    src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
+                    src={`https://image.tmdb.org/t/p/original${movieDetails.backdropPath || movieDetails.poster_path}`}
                     alt={movieDetails.title}
-                    className="w-full max-w-sm"
+                    className="w-full h-auto"
                 />
-                <button
-                    className="mt-4 bg-blue-500 text-white py-2 px-4 rounded"
-                    onClick={handlePlayMovie}
-                >
-                    Play
-                </button>
-                <button
-                    className="ml-4 py-2 px-4 border border-blue-500 text-blue-500 rounded"
-                    onClick={handleWatchlistToggle}
-                >
-                    {isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
-                </button>
+                {/* Optional overlay for better text visibility */}
+                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+            </div>
+
+            {/* Movie Details */}
+            <div className="container py-8 text-white">
+                <h1 className="text-4xl font-bold">{movieDetails.title}</h1>
+                <div className="mt-4 flex flex-col md:flex-row md:items-center">
+                    {/* Release Date */}
+                    <span className="text-lg font-medium text-gray-400">
+                        Release Date: {movieDetails.releaseDate || "N/A"}
+                    </span>
+
+                    {/* Separator for aesthetics */}
+                    <span className="hidden md:block mx-4 text-gray-600">|</span>
+
+                    {/* Genres */}
+                    <div className="mt-2 md:mt-0">
+                        <span className="text-lg font-medium text-gray-400">
+                            Genres:{" "}
+                            {movieDetails.genres && movieDetails.genres.length > 0 ? (
+                                movieDetails.genres.join(", ")
+                            ) : (
+                                "N/A"
+                            )}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Overview */}
+                <p className="mt-6 text-lg">{movieDetails.overview}</p>
+
+                {/* Play and Watchlist Buttons */}
+                <div className="mt-8 flex gap-4">
+                    <button
+                        className="bg-blue-500 text-white py-2 px-4 rounded"
+                        onClick={handlePlayMovie}
+                    >
+                        Play
+                    </button>
+                    <button
+                        className="py-2 px-4 border border-blue-500 text-blue-500 rounded"
+                        onClick={handleWatchlistToggle}
+                    >
+                        {isInWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+                    </button>
+                </div>
             </div>
 
             {/* Similar Movies */}
-            <section className="mt-8">
+            <section className="container mt-8 text-white">
                 <h3 className="text-2xl font-semibold mb-4">Similar Movies</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {Array.isArray(similarMovies) && similarMovies.length > 0 ? (
@@ -140,6 +172,6 @@ const MovieDetailsPage: React.FC = () => {
             </section>
         </div>
     );
-};
+}
 
 export default MovieDetailsPage;
