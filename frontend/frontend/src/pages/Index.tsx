@@ -137,7 +137,7 @@ const Index: React.FC = () => {
             overview: movie.overview,
             backdropPath: movie.backdrop_path, // Correctly map the property name
             poster_path: movie.poster_path, // Correctly map the property name
-            genres: [], // You can update this if you have genre data or handle it differently
+            genre_ids: movie.genre_ids, // You can update this if you have genre data or handle it differently
             release_date: movie.release_date
           });
         } else {

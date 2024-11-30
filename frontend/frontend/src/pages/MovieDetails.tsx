@@ -91,6 +91,18 @@ const MovieDetailsPage: React.FC = () => {
         return <p>Loading movie details...</p>;
     }
 
+    const GENRE_MAPPING: { [key: number]: string } = {
+        16: "Animation",
+        14: "Fantasy",
+        28: "Action",
+        35: "Comedy",
+        878: "Science Fiction",
+        12: "Adventure",
+        10751: "Family",
+        // Add more mappings as needed
+    };
+
+
     return (
         <div>
             <Navigation />
@@ -121,13 +133,16 @@ const MovieDetailsPage: React.FC = () => {
                     <div className="mt-2 md:mt-0">
                         <span className="text-lg font-medium text-gray-400">
                             Genres:{" "}
-                            {movieDetails.genres && movieDetails.genres.length > 0 ? (
-                                movieDetails.genres.join(", ")
+                            {movieDetails.genre_ids && movieDetails.genre_ids.length > 0 ? (
+                                movieDetails.genre_ids
+                                    .map((id) => GENRE_MAPPING[id] || "Unknown") // Map IDs to names
+                                    .join(", ")
                             ) : (
                                 "N/A"
                             )}
                         </span>
                     </div>
+
                 </div>
 
                 {/* Overview */}

@@ -8,7 +8,7 @@ export interface Movie {
   overview: string;
   poster_path: string;
   backdropPath: string;
-  genres: string[];
+  genre_ids: number[];
 }
 
 export interface HeroSectionProps {
@@ -37,7 +37,7 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle }: HeroSecti
         <div className="max-w-2xl space-y-4">
           <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">{movie.title}</h1>
           <div className="flex flex-wrap gap-2">
-            {movie.genres.map((genre) => (
+            {movie.genre_ids.map((genre) => (
               <span
                 key={genre}
                 className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
