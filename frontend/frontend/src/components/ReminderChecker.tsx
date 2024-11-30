@@ -35,6 +35,27 @@ export const ReminderChecker: React.FC = () => {
         }
     };
 
+    // Function to delete a reminder from the backend
+    const deleteReminder = async (id: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            await fetch(
+                `https://movielist-nl59.onrender.com/api/v1/reminder/${id}`,
+                {
+                    method: "DELETE",
+                    credentials: "include",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            // Remove the reminder from the local state after it's deleted from the backend
+            setReminders((prev) => prev.filter((r) => r._id !== id));
+        } catch (error) {
+            console.error("Failed to delete reminder:", error);
+        }
+    };
+
     // Function to check and trigger toast when reminder time is due
     const checkReminders = () => {
         const now = new Date();
@@ -59,9 +80,11 @@ export const ReminderChecker: React.FC = () => {
                     action: (
                         <button
                             className="text-blue-500"
-                            onClick={() =>
-                                console.log(`Navigating to movie ${reminder.movieId}`)
-                            }
+                            onClick={() => {
+                                // When "Watch Now" is clicked, delete the reminder
+                                deleteReminder(reminder._id);
+                                console.log(`Navigating to movie ${reminder.movieId}`);
+                            }}
                         >
                             Watch Now
                         </button>
