@@ -13,8 +13,6 @@ const MovieDetailsPage: React.FC = () => {
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [error, setError] = useState<string>("");
 
-
-
     const fetchMovies = async (
         endpoint: string,
         setter: React.Dispatch<React.SetStateAction<Movie[]>>
@@ -22,32 +20,30 @@ const MovieDetailsPage: React.FC = () => {
         const token = localStorage.getItem("token");
 
         try {
-
-
             const response = await fetch(`${BASE_URL}/${endpoint}`, {
-                credentials: "include", // Include cookies in the request
                 headers: {
-                    // If you're using JWT, attach it to the Authorization header
-                    "Authorization": token ? `Bearer ${token}` : "", // Add Bearer token to the Authorization header if token exists
-                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                    Authorization: token ? `Bearer ${token}` : "",
                 },
             });
             const data = await response.json();
-            console.log("Similar Movies API response:", data);  // Log the response
-
+            console.log("Similar Movies API response:", data);
 
             if (data.success && Array.isArray(data.content?.results)) {
-                setter(data.content?.results); // Set the movie in the trendingMovies array as a single-item array
+                const transformedMovies = data.content.results.map((movie) => ({
+                    id: movie.id,
+                    title: movie.title,
+                    poster_path: movie.poster_path,
+                }));
+                setter(transformedMovies);
             } else {
                 throw new Error("Failed to fetch movies.");
             }
         } catch (err) {
+            console.error("Error fetching movies:", err);
             setError((err as Error).message || "Something went wrong");
         }
     };
 
-
-    // Fetch movie details including similar movies if available
     const fetchMovieDetails = async () => {
         const token = localStorage.getItem("token");
         try {
@@ -57,55 +53,22 @@ const MovieDetailsPage: React.FC = () => {
                 },
             });
             const data = await response.json();
-            console.log("Movie Details Response:", data); // Debugging response
+            console.log("Movie Details Response:", data);
+
             if (data.success) {
                 setMovieDetails(data.content);
-                setSimilarMovies(data.content.similarMovies || []); // Set similar movies or empty array
+                setSimilarMovies(data.content.similarMovies || []);
             } else {
                 console.error("Failed to fetch movie details:", data.message);
-
             }
         } catch (error) {
             console.error("Error fetching movie details:", error);
-
         }
     };
 
-    // Fetch similar movies from a separate endpoint if necessary
-    // const fetchSimilarMovies = async () => {
-    //     const token = localStorage.getItem("token");
-    //     try {
-    //         const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${token}`,
-    //             },
-    //         });
-
-    //         // Check if the response is okay (status code 200-299)
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! Status: ${response.status}`);
-    //         }
-
-    //         const data = await response.json();
-    //         console.log("Similar Movies Response:", data); // Debugging response
-
-    //         // Check if the data contains the expected structure
-    //         if (data.success && Array.isArray(data.content?.results)) {
-    //             setSimilarMovies(data.content.results); // Set the array of similar movies
-    //         } else {
-    //             console.error("Unexpected data structure:", data);
-    //             throw new Error("Failed to fetch similar movies or invalid response format.");
-    //         }
-    //     } catch (err) {
-    //         console.error("Error fetching similar movies:", err);
-    //         setError((err as Error).message || "Something went wrong");
-    //     }
-    // };
-
-    // UseEffect to fetch details and similar movies
     useEffect(() => {
         fetchMovieDetails();
-        fetchMovies(`api/v1/movie/${id}/similar`, setSimilarMovies)
+        fetchMovies(`api/v1/movie/${id}/similar`, setSimilarMovies);
     }, [id]);
 
     const handleWatchlistToggle = () => {
@@ -160,7 +123,7 @@ const MovieDetailsPage: React.FC = () => {
                                 title={movie.title}
                                 poster_path={movie.poster_path}
                                 inWatchlist={false}
-                                onWatchlistToggle={() => { }}
+                                onWatchlistToggle={() => console.log(`Toggled watchlist for ${movie.id}`)}
                             />
                         ))
                     ) : (
@@ -173,5 +136,3 @@ const MovieDetailsPage: React.FC = () => {
 };
 
 export default MovieDetailsPage;
-
-
