@@ -48,12 +48,14 @@ export const ReminderChecker: React.FC = () => {
 
     const checkReminders = useCallback(() => {
         const now = new Date();
+        console.log("Checking reminders at:", now.toISOString()); // Debugging log
+
         const upcomingReminders = reminders.filter((reminder) => {
             const reminderDate = new Date(reminder.reminderDate);
+            console.log(`Reminder: ${reminder.movieTitle}, Scheduled: ${reminderDate}, Now: ${now}`); // Debug log
             return reminderDate <= now;
         });
 
-        // Show a notification for each due reminder
         upcomingReminders.forEach((reminder) => {
             toast({
                 title: "Reminder Alert!",
@@ -66,23 +68,26 @@ export const ReminderChecker: React.FC = () => {
                         Watch Now
                     </button>
                 ),
+                duration: 30000,
             });
 
-            // Remove the expired reminder locally
             setReminders((prev) =>
                 prev.filter((r) => r._id !== reminder._id)
             );
 
-            // Optionally delete the reminder from the backend
-            deleteReminder(reminder._id);
+            deleteReminder(reminder._id); // Optionally remove from the backend
         });
     }, [reminders, toast]);
 
     useEffect(() => {
-        fetchReminders(); // Initial fetch
-        const interval = setInterval(checkReminders, 60000); // Check every minute
-        return () => clearInterval(interval); // Cleanup on unmount
-    }, [checkReminders]); // Include checkReminders as a dependency
+        const interval = setInterval(() => {
+            console.log("Checking reminders periodically"); // Debugging log
+            checkReminders();
+        }, 60000); // Every minute
+
+        return () => clearInterval(interval); // Cleanup
+    }, [checkReminders]);
+    // Include checkReminders as a dependency
 
     return null; // No visible UI
 };
