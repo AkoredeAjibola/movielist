@@ -62,6 +62,7 @@ import { HeroSection } from "@/components/HeroSection";
 import { MovieCard } from "@/components/MovieCard";
 import { Navigation } from "@/components/Navigation";
 import { Movie } from "@/components/HeroSection";
+import { ReminderChecker } from "@/components/ReminderChecker";
 
 const BASE_URL = "https://movielist-nl59.onrender.com"
 
@@ -189,6 +190,7 @@ const Index: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      <ReminderChecker />
       <main className="pt-16">
         {/* Featured Movie */}
         {featuredMovie ? (
