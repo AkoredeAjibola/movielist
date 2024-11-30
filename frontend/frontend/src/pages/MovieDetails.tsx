@@ -20,6 +20,7 @@ const MovieDetailsPage: React.FC = () => {
         const token = localStorage.getItem("token");
 
         try {
+            console.log(`Fetching from URL: ${BASE_URL}/${endpoint}`);
 
             const response = await fetch(`${BASE_URL}/${endpoint}`, {
                 headers: {
@@ -27,24 +28,29 @@ const MovieDetailsPage: React.FC = () => {
                 },
             });
 
+            // Check if response is okay
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
+            // Parse the response as JSON
             const data = await response.json();
-            console.log("Similar Movies API response:", data);
+            console.log("API response:", data); // Log entire response
 
-            if (data.success && Array.isArray(data.content?.results)) {
-                setter(data.content?.results);
+            // Ensure success and correct structure
+            if (data.success && Array.isArray(data.similar)) {
+                console.log("Fetched similar movies:", data.similar); // Log similar movies
+                setter(data.similar); // Update state with the results
             } else {
-                throw new Error("Failed to fetch movies.");
+                console.error("Unexpected data format. Expected 'similar' to be an array.", data);
+                throw new Error("Failed to fetch movies. Unexpected data format.");
             }
-        }
-        catch (err) {
+        } catch (err) {
             console.error("Error fetching movies:", err);
             setError((err as Error).message || "Something went wrong");
         }
     };
+
 
     const fetchMovieDetails = async () => {
         const token = localStorage.getItem("token");
