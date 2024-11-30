@@ -164,7 +164,7 @@ export const WatchReminder = ({
             onChange={(date: Date) => setDateTime(date)} // Single date selection
             showTimeSelect
             timeFormat="HH:mm"
-            timeIntervals={15} // Time selection intervals (15 minutes)
+            timeIntervals={1} // Time selection intervals (15 minutes)
             dateFormat="MMMM d, yyyy h:mm aa" // Custom format
             className="rounded-md border w-full p-2"
           />
