@@ -71,7 +71,6 @@ const BASE_URL = "https://movielist-nl59.onrender.com"
 const Index: React.FC = () => {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null); // Featured movie
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]); // Trending movies
-  const [moviecategory, setMovieCategory] = useState<Movie[]>([]); // Trending movies
   const [searchResults, setSearchResults] = useState<Movie[]>([]); // Search results
   const [view, setView] = useState<"default" | "search">("default");
   const [loading, setLoading] = useState<boolean>(false);

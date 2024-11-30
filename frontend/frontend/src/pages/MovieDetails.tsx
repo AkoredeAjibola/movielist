@@ -35,16 +35,12 @@ const MovieDetailsPage: React.FC = () => {
             console.log("Similar Movies API response:", data);
 
             if (data.success && Array.isArray(data.content?.results)) {
-                const transformedMovies = data.content.results.map((movie) => ({
-                    id: movie.id,
-                    title: movie.title,
-                    poster_path: movie.poster_path,
-                }));
-                setter(transformedMovies);
+                setter(data.content?.results);
             } else {
                 throw new Error("Failed to fetch movies.");
             }
-        } catch (err) {
+        }
+        catch (err) {
             console.error("Error fetching movies:", err);
             setError((err as Error).message || "Something went wrong");
         }
