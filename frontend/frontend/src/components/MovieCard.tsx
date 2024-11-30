@@ -118,14 +118,15 @@ export const MovieCard = ({
 
   return (
     <Card className="group relative overflow-hidden transition-all hover:scale-105">
-      <CardHeader className="p-0">
-        <img
-          src={imageUrl}
-          alt={title}
-          className="aspect-[2/3] w-full object-cover"
-        />
-        <Link to={"/movie/:id"}></Link>
-      </CardHeader>
+      <Link to={`/movie/${id}`}>
+        <CardHeader className="p-0">
+          <img
+            src={imageUrl}
+            alt={title}
+            className="aspect-[2/3] w-full object-cover"
+          />
+        </CardHeader>
+      </Link>
 
       <div className="absolute right-2 top-2 flex gap-2">
         <Button
