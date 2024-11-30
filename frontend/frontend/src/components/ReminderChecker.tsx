@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface Reminder {
@@ -31,36 +31,6 @@ export const ReminderChecker: React.FC = () => {
         }
     };
 
-    const checkReminders = () => {
-        const now = new Date();
-        reminders.forEach((reminder) => {
-            const reminderDate = new Date(reminder.reminderDate);
-            if (reminderDate <= now) {
-                // Notify user
-                toast({
-                    title: "Reminder Alert!",
-                    description: `It's time to watch ${reminder.movieTitle}!`,
-                    action: (
-                        <button
-                            className="text-blue-500"
-                            onClick={() => console.log(`Navigating to movie ${reminder.movieId}`)}
-                        >
-                            Watch Now
-                        </button>
-                    ),
-                });
-
-                // Remove the expired reminder locally
-                setReminders((prev) =>
-                    prev.filter((r) => r._id !== reminder._id)
-                );
-
-                // Optionally delete reminder from backend
-                deleteReminder(reminder._id);
-            }
-        });
-    };
-
     const deleteReminder = async (id: string) => {
         try {
             const token = localStorage.getItem("token");
@@ -76,11 +46,43 @@ export const ReminderChecker: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        fetchReminders();
-        const interval = setInterval(checkReminders, 60000); // Check every minute
-        return () => clearInterval(interval);
-    }, [reminders]);
+    const checkReminders = useCallback(() => {
+        const now = new Date();
+        const upcomingReminders = reminders.filter((reminder) => {
+            const reminderDate = new Date(reminder.reminderDate);
+            return reminderDate <= now;
+        });
 
-    return null; // This component doesn't render anything visible
+        // Show a notification for each due reminder
+        upcomingReminders.forEach((reminder) => {
+            toast({
+                title: "Reminder Alert!",
+                description: `It's time to watch "${reminder.movieTitle}"!`,
+                action: (
+                    <button
+                        className="text-blue-500"
+                        onClick={() => console.log(`Navigating to movie ${reminder.movieId}`)}
+                    >
+                        Watch Now
+                    </button>
+                ),
+            });
+
+            // Remove the expired reminder locally
+            setReminders((prev) =>
+                prev.filter((r) => r._id !== reminder._id)
+            );
+
+            // Optionally delete the reminder from the backend
+            deleteReminder(reminder._id);
+        });
+    }, [reminders, toast]);
+
+    useEffect(() => {
+        fetchReminders(); // Initial fetch
+        const interval = setInterval(checkReminders, 60000); // Check every minute
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [checkReminders]); // Include checkReminders as a dependency
+
+    return null; // No visible UI
 };
