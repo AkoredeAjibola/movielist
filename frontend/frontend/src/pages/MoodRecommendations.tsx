@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { MoodSelector } from "@/components/MoodSelector";
 import { MovieCard } from "@/components/MovieCard";
+import { Navigation } from "@/components/Navigation";
 
 const BASE_URL = "https://movielist-nl59.onrender.com";
 export const MoodRecommendations: React.FC = () => {
@@ -43,6 +44,7 @@ export const MoodRecommendations: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8">
+      <Navigation />
       <h1 className="text-3xl font-bold mb-4">Find Movies by Your Mood</h1>
       <MoodSelector selectedMood={selectedMood} onSelectMood={fetchMoviesByMood} />
 

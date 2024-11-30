@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MovieCard } from "../components/MovieCard";
 import { Movie } from "@/components/HeroSection";
+import { Navigation } from "@/components/Navigation";
 
 const BASE_URL = "https://movielist-nl59.onrender.com";
 
@@ -11,6 +12,39 @@ const MovieDetailsPage: React.FC = () => {
     const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [error, setError] = useState<string>("");
+
+
+
+    const fetchMovies = async (
+        endpoint: string,
+        setter: React.Dispatch<React.SetStateAction<Movie[]>>
+    ): Promise<void> => {
+        const token = localStorage.getItem("token");
+
+        try {
+
+
+            const response = await fetch(`${BASE_URL}/${endpoint}`, {
+                credentials: "include", // Include cookies in the request
+                headers: {
+                    // If you're using JWT, attach it to the Authorization header
+                    "Authorization": token ? `Bearer ${token}` : "", // Add Bearer token to the Authorization header if token exists
+                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                },
+            });
+            const data = await response.json();
+            console.log("Similar Movies API response:", data);  // Log the response
+
+
+            if (data.success && Array.isArray(data.content?.results)) {
+                setter(data.content?.results); // Set the movie in the trendingMovies array as a single-item array
+            } else {
+                throw new Error("Failed to fetch movies.");
+            }
+        } catch (err) {
+            setError((err as Error).message || "Something went wrong");
+        }
+    };
 
 
     // Fetch movie details including similar movies if available
@@ -29,49 +63,49 @@ const MovieDetailsPage: React.FC = () => {
                 setSimilarMovies(data.content.similarMovies || []); // Set similar movies or empty array
             } else {
                 console.error("Failed to fetch movie details:", data.message);
-                fetchSimilarMovies(); // Fallback if similar movies are not in the main details
+
             }
         } catch (error) {
             console.error("Error fetching movie details:", error);
-            fetchSimilarMovies(); // Fallback on error
+
         }
     };
 
     // Fetch similar movies from a separate endpoint if necessary
-    const fetchSimilarMovies = async () => {
-        const token = localStorage.getItem("token");
-        try {
-            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+    // const fetchSimilarMovies = async () => {
+    //     const token = localStorage.getItem("token");
+    //     try {
+    //         const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         });
 
-            // Check if the response is okay (status code 200-299)
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    //         // Check if the response is okay (status code 200-299)
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! Status: ${response.status}`);
+    //         }
 
-            const data = await response.json();
-            console.log("Similar Movies Response:", data); // Debugging response
+    //         const data = await response.json();
+    //         console.log("Similar Movies Response:", data); // Debugging response
 
-            // Check if the data contains the expected structure
-            if (data.success && Array.isArray(data.content?.results)) {
-                setSimilarMovies(data.content.results); // Set the array of similar movies
-            } else {
-                console.error("Unexpected data structure:", data);
-                throw new Error("Failed to fetch similar movies or invalid response format.");
-            }
-        } catch (err) {
-            console.error("Error fetching similar movies:", err);
-            setError((err as Error).message || "Something went wrong");
-        }
-    };
+    //         // Check if the data contains the expected structure
+    //         if (data.success && Array.isArray(data.content?.results)) {
+    //             setSimilarMovies(data.content.results); // Set the array of similar movies
+    //         } else {
+    //             console.error("Unexpected data structure:", data);
+    //             throw new Error("Failed to fetch similar movies or invalid response format.");
+    //         }
+    //     } catch (err) {
+    //         console.error("Error fetching similar movies:", err);
+    //         setError((err as Error).message || "Something went wrong");
+    //     }
+    // };
 
     // UseEffect to fetch details and similar movies
     useEffect(() => {
         fetchMovieDetails();
-        fetchSimilarMovies()
+        fetchMovies(`api/v1/movie/${id}/similar`, setSimilarMovies)
     }, [id]);
 
     const handleWatchlistToggle = () => {
@@ -89,6 +123,7 @@ const MovieDetailsPage: React.FC = () => {
 
     return (
         <div className="container py-8">
+            <Navigation />
             <h2 className="text-3xl font-semibold">{movieDetails.title}</h2>
             <p>{movieDetails.overview}</p>
 
