@@ -7,6 +7,13 @@ export async function setReminder(req, res) {
   try {
     if (!movieId || !movieTitle || !reminderDate) {
       return res.status(400).json({ success: false, message: 'All fields are required' });
+
+    }
+      const existingReminder = await Reminder.findOne({ user: req.user.id, movieId });
+      if (existingReminder) {
+        return res.status(400).json({ success: false, message: 'Reminder already exists for this movie' });
+      
+  
     }
 
     const newReminder = new Reminder({

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface Reminder {
@@ -12,6 +12,7 @@ export const ReminderChecker: React.FC = () => {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const { toast } = useToast();
 
+    // Fetch reminders when the component mounts
     const fetchReminders = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -46,48 +47,62 @@ export const ReminderChecker: React.FC = () => {
         }
     };
 
-    const checkReminders = useCallback(() => {
+    const checkReminders = () => {
         const now = new Date();
-        console.log("Checking reminders at:", now.toISOString()); // Debugging log
+        console.log("Checking reminders at:", now.toISOString());
 
         const upcomingReminders = reminders.filter((reminder) => {
             const reminderDate = new Date(reminder.reminderDate);
-            console.log(`Reminder: ${reminder.movieTitle}, Scheduled: ${reminderDate}, Now: ${now}`); // Debug log
-            return reminderDate <= now;
+            console.log(`Checking reminder: ${reminder.movieTitle} at ${reminderDate.toISOString()} against current time ${now.toISOString()}`);
+            return reminderDate <= now; // Only get past reminders
         });
 
-        upcomingReminders.forEach((reminder) => {
-            toast({
-                title: "Reminder Alert!",
-                description: `It's time to watch "${reminder.movieTitle}"!`,
-                action: (
-                    <button
-                        className="text-blue-500"
-                        onClick={() => console.log(`Navigating to movie ${reminder.movieId}`)}
-                    >
-                        Watch Now
-                    </button>
-                ),
-                duration: 30000,
+        if (upcomingReminders.length > 0) {
+            upcomingReminders.forEach((reminder) => {
+                console.log(`Reminder triggered: ${reminder.movieTitle}`);
+
+                toast({
+                    title: "Reminder Alert!",
+                    description: `It's time to watch "${reminder.movieTitle}"!`,
+                    action: (
+                        <button
+                            className="text-blue-500"
+                            onClick={() => console.log(`Navigating to movie ${reminder.movieId}`)}
+                        >
+                            Watch Now
+                        </button>
+                    ),
+                    duration: 30000, // Show the toast for 30 seconds
+                });
+
+                // Remove reminder locally after showing the toast
+                setReminders((prev) => prev.filter((r) => r._id !== reminder._id));
+
+                // Optionally, delete the reminder from the backend
+                deleteReminder(reminder._id);
             });
+        }
+    };
 
-            setReminders((prev) =>
-                prev.filter((r) => r._id !== reminder._id)
-            );
-
-            deleteReminder(reminder._id); // Optionally remove from the backend
-        });
-    }, [reminders, toast]);
-
+    // Fetch reminders when component mounts
     useEffect(() => {
+        console.log("Fetching reminders...");
+        fetchReminders();
+
         const interval = setInterval(() => {
-            console.log("Checking reminders periodically"); // Debugging log
-            checkReminders();
+            console.log("Checking reminders periodically");
+            checkReminders(); // Run the reminder check every minute
         }, 60000); // Every minute
 
-        return () => clearInterval(interval); // Cleanup
-    }, [checkReminders]);
-    // Include checkReminders as a dependency
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    }, []); // Only run this on mount
 
-    return null; // No visible UI
+    // Effect to check reminders and update state
+    useEffect(() => {
+        // Here we're making sure that checkReminders uses the latest `reminders` state
+        console.log("Checking reminders after state update");
+        checkReminders();
+    }, [reminders]); // Run this effect when `reminders` state changes
+
+    return null; // This component doesn't render anything visible
 };
