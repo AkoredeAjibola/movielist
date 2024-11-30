@@ -10,6 +10,8 @@ const MovieDetailsPage: React.FC = () => {
     const [movieDetails, setMovieDetails] = useState<Movie | null>(null);
     const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
     const [isInWatchlist, setIsInWatchlist] = useState(false);
+    const [error, setError] = useState<string>("");
+
 
     // Fetch movie details including similar movies if available
     const fetchMovieDetails = async () => {
@@ -44,21 +46,32 @@ const MovieDetailsPage: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
+            // Check if the response is okay (status code 200-299)
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
             const data = await response.json();
             console.log("Similar Movies Response:", data); // Debugging response
-            if (data.success) {
-                setSimilarMovies(data.content || []); // Set similar movies or fallback
+
+            // Check if the data contains the expected structure
+            if (data.success && Array.isArray(data.content?.results)) {
+                setSimilarMovies(data.content.results); // Set the array of similar movies
             } else {
-                console.error("Failed to fetch similar movies:", data.message);
+                console.error("Unexpected data structure:", data);
+                throw new Error("Failed to fetch similar movies or invalid response format.");
             }
-        } catch (error) {
-            console.error("Error fetching similar movies:", error);
+        } catch (err) {
+            console.error("Error fetching similar movies:", err);
+            setError((err as Error).message || "Something went wrong");
         }
     };
 
     // UseEffect to fetch details and similar movies
     useEffect(() => {
         fetchMovieDetails();
+        fetchSimilarMovies()
     }, [id]);
 
     const handleWatchlistToggle = () => {
@@ -125,3 +138,5 @@ const MovieDetailsPage: React.FC = () => {
 };
 
 export default MovieDetailsPage;
+
+
