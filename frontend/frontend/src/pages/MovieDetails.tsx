@@ -11,6 +11,7 @@ const MovieDetailsPage: React.FC = () => {
     const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
     const [isInWatchlist, setIsInWatchlist] = useState(false);
 
+    // Fetch movie details including similar movies if available
     const fetchMovieDetails = async () => {
         const token = localStorage.getItem("token");
         try {
@@ -20,15 +21,42 @@ const MovieDetailsPage: React.FC = () => {
                 },
             });
             const data = await response.json();
+            console.log("Movie Details Response:", data); // Debugging response
             if (data.success) {
                 setMovieDetails(data.content);
-                setSimilarMovies(data.content.similarMovies || []);
+                setSimilarMovies(data.content.similarMovies || []); // Set similar movies or empty array
+            } else {
+                console.error("Failed to fetch movie details:", data.message);
+                fetchSimilarMovies(); // Fallback if similar movies are not in the main details
             }
         } catch (error) {
             console.error("Error fetching movie details:", error);
+            fetchSimilarMovies(); // Fallback on error
         }
     };
 
+    // Fetch similar movies from a separate endpoint if necessary
+    const fetchSimilarMovies = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/similar`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const data = await response.json();
+            console.log("Similar Movies Response:", data); // Debugging response
+            if (data.success) {
+                setSimilarMovies(data.content || []); // Set similar movies or fallback
+            } else {
+                console.error("Failed to fetch similar movies:", data.message);
+            }
+        } catch (error) {
+            console.error("Error fetching similar movies:", error);
+        }
+    };
+
+    // UseEffect to fetch details and similar movies
     useEffect(() => {
         fetchMovieDetails();
     }, [id]);
@@ -51,6 +79,7 @@ const MovieDetailsPage: React.FC = () => {
             <h2 className="text-3xl font-semibold">{movieDetails.title}</h2>
             <p>{movieDetails.overview}</p>
 
+            {/* Movie Poster and Play Button */}
             <div className="mt-4">
                 <img
                     src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
@@ -71,6 +100,7 @@ const MovieDetailsPage: React.FC = () => {
                 </button>
             </div>
 
+            {/* Similar Movies */}
             <section className="mt-8">
                 <h3 className="text-2xl font-semibold mb-4">Similar Movies</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
