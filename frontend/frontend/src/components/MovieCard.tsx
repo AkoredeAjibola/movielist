@@ -144,7 +144,7 @@ export const MovieCard = ({
         <Button
           size="icon"
           variant="secondary"
-          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+          className="h-8 w-8"
           onClick={handleWatchlistToggle}  // Toggle watchlist state
         >
           <Bookmark className={isInWatchlist ? "fill-current" : ""} />
@@ -157,7 +157,7 @@ export const MovieCard = ({
         <Button
           size="icon"
           variant="secondary"
-          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+          className="h-8 w-8"
           onClick={handleReminderToggle}  // Handle reminder click
         >
           <span className="sr-only">Set reminder</span>
