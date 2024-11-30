@@ -111,7 +111,7 @@ const MovieDetailsPage: React.FC = () => {
                 <div className="mt-4 flex flex-col md:flex-row md:items-center">
                     {/* Release Date */}
                     <span className="text-lg font-medium text-gray-400">
-                        Release Date: {movieDetails.releaseDate || "N/A"}
+                        Release Date: {movieDetails.release_date || "N/A"}
                     </span>
 
                     {/* Separator for aesthetics */}
