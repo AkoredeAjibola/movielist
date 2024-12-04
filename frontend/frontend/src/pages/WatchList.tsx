@@ -42,13 +42,12 @@ const WatchlistPage: React.FC = () => {
     }, []);
 
     // Handle add/remove from watchlist
-    const handleWatchlistToggle = async (id: string) => {
-        const isInWatchlist = watchlist.some((movie) => movie.id === id);
+    const handleWatchlistToggle = async (id: string, isInWatchlist: boolean) => {
+        const token = localStorage.getItem("token");
 
         if (isInWatchlist) {
             // Remove from watchlist
             try {
-                const token = localStorage.getItem("token");
                 await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
                     method: "DELETE",
                     headers: {
@@ -64,9 +63,8 @@ const WatchlistPage: React.FC = () => {
             }
         } else {
             // Add to watchlist
-            const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" };  // Update this based on your data structure
             try {
-                const token = localStorage.getItem("token");
+                const movieToAdd = { id };  // Ensure you add necessary movie details
                 await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
                     headers: {
@@ -77,7 +75,9 @@ const WatchlistPage: React.FC = () => {
                     body: JSON.stringify(movieToAdd),
                     credentials: "include",
                 });
-                setWatchlist([...watchlist, movieToAdd]); // Add to state
+                // Add to state with updated watchlist
+                const updatedWatchlist = [...watchlist, { id, title: "Movie Title", poster_path: "/path/to/image" }];
+                setWatchlist(updatedWatchlist);
             } catch (err) {
                 console.error("Failed to add to watchlist:", err);
             }

@@ -82,22 +82,18 @@
 // };
 
 import { useState } from "react";
-import { Bookmark, Link } from "lucide-react";
+import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
-import { WatchReminder } from "./WatchReminder";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { WatchReminder } from "./WatchReminder";
 
 interface MovieCardProps {
   id: string;
   title: string;
   poster_path: string;
   inWatchlist: boolean;
-  onWatchlistToggle: (id: string) => void;  // Add this to trigger toggle
+  onWatchlistToggle: (id: string, inWatchlist: boolean) => void;
 }
 
 export const MovieCard = ({
@@ -118,16 +114,12 @@ export const MovieCard = ({
   };
 
   const handleWatchlistToggle = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    onWatchlistToggle(id);  // Call the parent function
-    setIsInWatchlist(!isInWatchlist);  // Update local state to reflect UI
+    event.stopPropagation(); // Prevent click from navigating
+    // Toggle watchlist state
+    setIsInWatchlist(!isInWatchlist); // Update local UI state immediately
+    onWatchlistToggle(id, !isInWatchlist); // Pass the new state to the parent
   };
 
-  // Handle reminder toggle
-  const handleReminderToggle = (event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent the click from triggering the movie click
-    // Handle reminder toggle logic
-  };
   return (
     <Card className="group relative overflow-hidden transition-all hover:scale-105">
       <CardHeader className="p-0" onClick={handleMovieClick}>
@@ -160,9 +152,11 @@ export const MovieCard = ({
           </span>
         </Button>
       </div>
+
       <CardContent className="p-4">
         <h3 className="font-semibold">{title}</h3>
       </CardContent>
+
       {showReminder && (
         <WatchReminder
           movieId={id}
