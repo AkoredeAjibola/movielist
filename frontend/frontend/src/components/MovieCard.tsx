@@ -115,10 +115,11 @@ export const MovieCard = ({
 
   const handleWatchlistToggle = (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent click from navigating
-    // Toggle watchlist state
-    setIsInWatchlist(!isInWatchlist); // Update local UI state immediately
-    onWatchlistToggle(id, !isInWatchlist); // Pass the new state to the parent
+    console.log("Button clicked"); // Debugging log
+    setIsInWatchlist(!isInWatchlist); // Update local UI state
+    onWatchlistToggle(id, !isInWatchlist); // Call parent function
   };
+
 
   return (
     <Card className="group relative overflow-hidden transition-all hover:scale-105">
