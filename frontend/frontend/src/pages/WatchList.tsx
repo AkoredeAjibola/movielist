@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { MovieCard } from "@/components/MovieCard";
+import { MovieCard } from "@/components/MovieCard";  // Import MovieCard component
 import { Navigation } from "@/components/Navigation";
-import { error } from "console";
 
 interface Movie {
     id: string;
@@ -23,9 +22,8 @@ const WatchlistPage: React.FC = () => {
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    // If you're using JWT, attach it to the Authorization header
-                    "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
-                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                    "Authorization": `Bearer ${token}`,
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
                 },
             });
             const data = await response.json();
@@ -44,49 +42,47 @@ const WatchlistPage: React.FC = () => {
     }, []);
 
     // Handle add/remove from watchlist
-    const handleWatchlistToggle = async (movie: Movie) => {
-        const isInWatchlist = watchlist.some((item) => item.id === movie.id);
+    const handleWatchlistToggle = async (id: string) => {
+        const isInWatchlist = watchlist.some((movie) => movie.id === id);
 
         if (isInWatchlist) {
             // Remove from watchlist
             try {
                 const token = localStorage.getItem("token");
-                await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${movie.id}`, {
+                await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
                     method: "DELETE",
-                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json",
-                        // If you're using JWT, attach it to the Authorization header
-                        "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
-                        "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                        "Authorization": `Bearer ${token}`,
+                        "Cache-Control": "no-cache, no-store, must-revalidate",
                     },
+                    credentials: "include",
                 });
-                setWatchlist(watchlist.filter((item) => item.id !== movie.id));
+                setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Remove from state
             } catch (err) {
                 console.error("Failed to remove from watchlist:", err);
             }
         } else {
             // Add to watchlist
+            const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" };  // Update this based on your data structure
             try {
                 const token = localStorage.getItem("token");
                 await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        // If you're using JWT, attach it to the Authorization header
-                        "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
-                        "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                        "Authorization": `Bearer ${token}`,
+                        "Cache-Control": "no-cache, no-store, must-revalidate",
                     },
-                    body: JSON.stringify(movie),
+                    body: JSON.stringify(movieToAdd),
                     credentials: "include",
                 });
-                setWatchlist([...watchlist, movie]);
+                setWatchlist([...watchlist, movieToAdd]); // Add to state
             } catch (err) {
                 console.error("Failed to add to watchlist:", err);
             }
         }
     };
-
 
     return (
         <div className="min-h-screen bg-background">
@@ -95,8 +91,6 @@ const WatchlistPage: React.FC = () => {
                 <h1 className="text-3xl font-bold mb-6">Your Watchlist</h1>
                 {loading ? (
                     <p className="text-center text-neutral-200">Loading your watchlist...</p>
-                ) : error ? (
-                    <p className="text-red-500 text-center"></p>
                 ) : watchlist.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {watchlist.map((movie) => (
@@ -105,10 +99,8 @@ const WatchlistPage: React.FC = () => {
                                 id={movie.id}
                                 title={movie.title}
                                 poster_path={movie.poster_path}
-                                inWatchlist={true}
-                                onWatchlistToggle={() => {
-                                    console.log("Implement toggle functionality here.");
-                                }}
+                                inWatchlist={true} // Already in the watchlist
+                                onWatchlistToggle={handleWatchlistToggle} // Pass the function to toggle watchlist
                             />
                         ))}
                     </div>
