@@ -42,6 +42,8 @@ const WatchlistPage: React.FC = () => {
     }, []);
 
     // Handle add/remove from watchlist
+    ;
+
     const handleWatchlistToggle = async (id: string, isInWatchlist: boolean) => {
         const token = localStorage.getItem("token");
 
@@ -57,14 +59,14 @@ const WatchlistPage: React.FC = () => {
                     },
                     credentials: "include",
                 });
-                setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Remove from state
+                setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Optimistic state update
             } catch (err) {
                 console.error("Failed to remove from watchlist:", err);
             }
         } else {
             // Add to watchlist
+            const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" }; // Add movie details here
             try {
-                const movieToAdd = { id };  // Ensure you add necessary movie details
                 await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
                     headers: {
@@ -75,14 +77,17 @@ const WatchlistPage: React.FC = () => {
                     body: JSON.stringify(movieToAdd),
                     credentials: "include",
                 });
-                // Add to state with updated watchlist
-                const updatedWatchlist = [...watchlist, { id, title: "Movie Title", poster_path: "/path/to/image" }];
-                setWatchlist(updatedWatchlist);
+                setWatchlist([...watchlist, movieToAdd]); // Optimistic state update
             } catch (err) {
                 console.error("Failed to add to watchlist:", err);
             }
-        }
-    };
+
+            // Optionally, call fetchWatchlist() to ensure synchronization
+            fetchWatchlist();
+        };
+    }
+
+
 
     return (
         <div className="min-h-screen bg-background">
@@ -111,5 +116,7 @@ const WatchlistPage: React.FC = () => {
         </div>
     );
 };
+
+
 
 export default WatchlistPage;
