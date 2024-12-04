@@ -15,7 +15,7 @@ const WatchlistPage: React.FC = () => {
     const fetchWatchlist = async () => {
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/api/v1/watchlist/", {
+            const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/", {
                 method: "GET",
                 credentials: "include",
             });
@@ -41,7 +41,7 @@ const WatchlistPage: React.FC = () => {
         if (isInWatchlist) {
             // Remove from watchlist
             try {
-                await fetch(`http://localhost:3000/api/v1/watchlist/remove/${movie.id}`, {
+                await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${movie.id}`, {
                     method: "DELETE",
                     credentials: "include",
                 });
@@ -52,7 +52,7 @@ const WatchlistPage: React.FC = () => {
         } else {
             // Add to watchlist
             try {
-                await fetch("http://localhost:3000/api/v1/watchlist/add", {
+                await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(movie),

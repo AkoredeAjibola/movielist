@@ -5,12 +5,13 @@ import {
   getWatchlist,
   markAsWatched,
 } from "../controllers/watchlist.controller.js";
+import { protectRoute } from "../middleware/protectRoute.js";
 
 const router = express.Router();
 
-router.post("/add", addToWatchlist);
-router.delete("/watchlist", removeFromWatchlist);
-router.get("/", getWatchlist);
-router.put("/watchlist/watched", markAsWatched);
+router.post("/add", protectRoute, addToWatchlist);
+router.delete("/remove/:id", protectRoute, removeFromWatchlist);
+router.get("/", protectRoute, getWatchlist);
+router.put("/watchlist/watched", protectRoute, markAsWatched);
 
 export default router;
