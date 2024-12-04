@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Bookmark, User, Menu, X } from "lucide-react";
+import { Home, Bookmark, User, Menu, X, Clock, Bell, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchBar } from "./SearchBar";
 import { useState } from "react";
@@ -37,8 +37,18 @@ export const Navigation = () => {
               isActive("/watchhistory") ? "text-primary" : "text-muted-foreground"
             )}
           >
-            <Bookmark className="h-4 w-4" />
+            <Clock className="h-4 w-4" />
             <span>Watch History</span>
+          </Link>
+          <Link
+            to="/watchlist"
+            className={cn(
+              "flex items-center space-x-2 transition-colors hover:text-primary",
+              isActive("/watchlist") ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            <Bookmark className="h-4 w-4" />
+            <span>Watch List</span>
           </Link>
           <Link
             to="/reminders"
@@ -47,7 +57,7 @@ export const Navigation = () => {
               isActive("/reminders") ? "text-primary" : "text-muted-foreground"
             )}
           >
-            <Bookmark className="h-4 w-4" />
+            <Bell className="h-4 w-4" />
             <span>Reminders</span>
           </Link>
           <Link
@@ -57,7 +67,7 @@ export const Navigation = () => {
               isActive("/mood") ? "text-primary" : "text-muted-foreground"
             )}
           >
-            <Bookmark className="h-4 w-4" />
+            <Smile className="h-4 w-4" />
             <span>Mood Selector</span>
           </Link>
         </div>
@@ -113,7 +123,7 @@ export const Navigation = () => {
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Bookmark className="h-4 w-4" />
+              <Clock className="h-4 w-4" />
               <span>Watch History</span>
             </Link>
             <Link
@@ -124,7 +134,7 @@ export const Navigation = () => {
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Bookmark className="h-4 w-4" />
+              <Bell className="h-4 w-4" />
               <span>Reminders</span>
             </Link>
             <Link
@@ -135,9 +145,15 @@ export const Navigation = () => {
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <Bookmark className="h-4 w-4" />
+              <Smile className="h-4 w-4" />
               <span>Mood Selector</span>
             </Link>
+            <SearchBar
+              onSearch={() => { }}
+              searchHistory={[]}
+              onDeleteHistory={() => { }}
+              onClearHistory={() => { }}
+            />
             <Link
               to="/profile"
               className={cn(

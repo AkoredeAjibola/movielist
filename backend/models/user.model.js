@@ -18,8 +18,14 @@ const userSchema = mongoose.Schema({
 	
 	
 
-		preferences: [String],
-		watchHistory: [String],
+	preferences: {
+		type: [String],
+		default: [],
+	  },
+		watchHistory: {
+			type: [String],
+			default: [],
+		  },
 		streaks: { type: Number, default: 0 },
 		lastWatchedDate: { type: Date },
 		watchlist: [
@@ -28,8 +34,10 @@ const userSchema = mongoose.Schema({
 			  title: { type: String, required: true },
 			  poster_path: { type: String },
 			  watched: { type: Boolean, default: false }, // Track if the movie is watched
-			}
+			},
 		  ],
-});
+},
+{ timestamps: true }
+);
 
 export const User = mongoose.model("User", userSchema);
