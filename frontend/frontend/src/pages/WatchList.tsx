@@ -60,8 +60,10 @@ const WatchlistPage: React.FC = () => {
                     credentials: "include",
                 });
                 setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Optimistic state update
+                console.log(`Removing movie with ID: ${id}`);
             } catch (err) {
                 console.error("Failed to remove from watchlist:", err);
+
             }
         } else {
             // Add to watchlist
@@ -78,6 +80,7 @@ const WatchlistPage: React.FC = () => {
                     credentials: "include",
                 });
                 setWatchlist([...watchlist, movieToAdd]); // Optimistic state update
+                console.log(`Adding movie with ID: ${id}`);
             } catch (err) {
                 console.error("Failed to add to watchlist:", err);
             }
