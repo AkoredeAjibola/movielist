@@ -45,50 +45,45 @@ const WatchlistPage: React.FC = () => {
     ;
 
     const handleWatchlistToggle = async (id: string, isInWatchlist: boolean) => {
-        const token = localStorage.getItem("token");
+        console.log(`Movie ID: ${id}, Is in Watchlist: ${isInWatchlist}`); // Debugging log
 
+        const token = localStorage.getItem("token");
         if (isInWatchlist) {
             // Remove from watchlist
             try {
-                await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
+                const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
-                        "Cache-Control": "no-cache, no-store, must-revalidate",
                     },
                     credentials: "include",
                 });
-                setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Optimistic state update
-                console.log(`Removing movie with ID: ${id}`);
+                console.log("Remove response:", await response.json()); // Log response
+                setWatchlist(watchlist.filter((movie) => movie.id !== id));
             } catch (err) {
                 console.error("Failed to remove from watchlist:", err);
-
             }
         } else {
             // Add to watchlist
-            const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" }; // Add movie details here
+            const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" };
             try {
-                await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
+                const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
-                        "Cache-Control": "no-cache, no-store, must-revalidate",
                     },
                     body: JSON.stringify(movieToAdd),
                     credentials: "include",
                 });
-                setWatchlist([...watchlist, movieToAdd]); // Optimistic state update
-                console.log(`Adding movie with ID: ${id}`);
+                console.log("Add response:", await response.json()); // Log response
+                setWatchlist([...watchlist, movieToAdd]);
             } catch (err) {
                 console.error("Failed to add to watchlist:", err);
             }
-
-            // Optionally, call fetchWatchlist() to ensure synchronization
-            fetchWatchlist();
-        };
-    }
+        }
+    };
 
 
 
