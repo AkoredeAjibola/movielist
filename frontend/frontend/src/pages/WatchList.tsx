@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MovieCard } from "@/components/MovieCard";
+import { Navigation } from "@/components/Navigation";
+import { error } from "console";
 
 interface Movie {
     id: string;
@@ -85,27 +87,35 @@ const WatchlistPage: React.FC = () => {
         }
     };
 
+
     return (
-        <div>
-            <h1 className="text-3xl font-bold mb-4">Your Watchlist</h1>
-            {loading ? (
-                <p>Loading...</p>
-            ) : watchlist.length === 0 ? (
-                <p className="text-gray-500">Your watchlist is empty. Start adding movies now!</p>
-            ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {watchlist.map((movie) => (
-                        <MovieCard
-                            key={movie.id}
-                            id={movie.id}
-                            title={movie.title}
-                            poster_path={movie.poster_path}
-                            inWatchlist={true}
-                            onWatchlistToggle={() => handleWatchlistToggle(movie)}
-                        />
-                    ))}
-                </div>
-            )}
+        <div className="min-h-screen bg-background">
+            <Navigation />
+            <main className="container py-8">
+                <h1 className="text-3xl font-bold mb-6">Your Watchlist</h1>
+                {loading ? (
+                    <p className="text-center text-neutral-200">Loading your watchlist...</p>
+                ) : error ? (
+                    <p className="text-red-500 text-center"></p>
+                ) : watchlist.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {watchlist.map((movie) => (
+                            <MovieCard
+                                key={movie.id}
+                                id={movie.id}
+                                title={movie.title}
+                                poster_path={movie.poster_path}
+                                inWatchlist={true}
+                                onWatchlistToggle={() => {
+                                    console.log("Implement toggle functionality here.");
+                                }}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-center text-neutral-200">Your watchlist is empty. Start adding movies now!</p>
+                )}
+            </main>
         </div>
     );
 };
