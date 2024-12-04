@@ -4,7 +4,7 @@ import {
   removeFromWatchlist,
   getWatchlist,
   markAsWatched,
-} from "../controllers/watchlistController.js";
+} from "../controllers/watchlist.controller.js";
 
 const router = express.Router();
 
