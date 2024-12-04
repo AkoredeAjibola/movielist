@@ -1,91 +1,87 @@
+import { User } from "../models/userModel.js";
 
-import {User} from "../models/user.model.js";
+// Add movie to watchlist
+export const addToWatchlist = async (req, res) => {
+  try {
+    const { userId, movie } = req.body; // movie = { id, title, poster_path }
 
-export async function addToWatchlist(req, res) {
-    const { movieId, title, poster_path } = req.body; // Movie data
-    const userId = req.user._id; // Assuming user is authenticated
-  
-    // Validate input data
-    if (!movieId || !title || !poster_path) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields: movieId, title, or poster_path",
-      });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  
-    try {
-      const user = await User.findById(userId);
-      const alreadyInWatchlist = user.watchlist.some((movie) => movie.id === movieId);
-  
-      if (alreadyInWatchlist) {
-        return res.status(400).json({ success: false, message: "Movie already in watchlist" });
-      }
-  
-      user.watchlist.push({ id: movieId, title, poster_path });
-      await user.save();
-  
-      res.status(200).json({ success: true, message: "Movie added to watchlist" });
-    } catch (error) {
-      console.error("Error adding to watchlist:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+
+    const existingMovie = user.watchlist.find((item) => item.id === movie.id);
+
+    if (existingMovie) {
+      return res.status(400).json({ message: "Movie already in watchlist" });
     }
+
+    user.watchlist.push(movie);
+    await user.save();
+
+    res.status(201).json({ message: "Movie added to watchlist", watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add movie to watchlist" });
   }
-  
+};
 
+// Remove movie from watchlist
+export const removeFromWatchlist = async (req, res) => {
+  try {
+    const { userId, movieId } = req.body;
 
-
-
-export async function getWatchlist(req, res) {
-    const userId = req.user._id; // Assuming user is authenticated
-  
-    try {
-      const user = await User.findById(userId).select('watchlist');
-      res.status(200).json({ success: true, content: user.watchlist });
-    } catch (error) {
-      console.error('Error fetching watchlist:', error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  }
-  
 
-export async function updateWatchlist(req, res) {
-    const { movieId } = req.params;
-    const userId = req.user._id; // Assuming user is authenticated
-  
-    try {
-      const user = await User.findById(userId);
-      const movie = user.watchlist.find(movie => movie.id === movieId);
-  
-      if (!movie) {
-        return res.status(404).json({ success: false, message: 'Movie not found in watchlist' });
-      }
-  
-      movie.watched = !movie.watched; // Toggle watched status
-      await user.save();
-  
-      res.status(200).json({ success: true, message: `Movie marked as ${movie.watched ? 'watched' : 'unwatched'}` });
-    } catch (error) {
-      console.error('Error updating watchlist:', error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    user.watchlist = user.watchlist.filter((movie) => movie.id !== movieId);
+    await user.save();
+
+    res.status(200).json({ message: "Movie removed from watchlist", watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to remove movie from watchlist" });
+  }
+};
+
+
+// Get user's watchlist
+export const getWatchlist = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    res.status(200).json({ watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch watchlist" });
   }
-  
+};
 
 
-export async function removeFromWatchlist(req, res) {
-    const { movieId } = req.params;
-    const userId = req.user._id; // Assuming user is authenticated
-  
-    try {
-      const user = await User.findById(userId);
-      user.watchlist = user.watchlist.filter(movie => movie.id !== movieId);
-  
-      await user.save();
-  
-      res.status(200).json({ success: true, message: 'Movie removed from watchlist' });
-    } catch (error) {
-      console.error('Error removing from watchlist:', error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+// Mark movie as watched
+export const markAsWatched = async (req, res) => {
+  try {
+    const { userId, movieId, watched } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    const movie = user.watchlist.find((item) => item.id === movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found in watchlist" });
+    }
+
+    movie.watched = watched;
+    await user.save();
+
+    res.status(200).json({ message: "Movie status updated", watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update movie status" });
   }
-  
+};
