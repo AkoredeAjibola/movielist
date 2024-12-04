@@ -13,11 +13,18 @@ const WatchlistPage: React.FC = () => {
 
     // Fetch the watchlist from the backend
     const fetchWatchlist = async () => {
+        const token = localStorage.getItem("token");
         setLoading(true);
         try {
             const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/", {
                 method: "GET",
                 credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    // If you're using JWT, attach it to the Authorization header
+                    "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+                    "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                },
             });
             const data = await response.json();
             if (data.success) {
@@ -41,9 +48,16 @@ const WatchlistPage: React.FC = () => {
         if (isInWatchlist) {
             // Remove from watchlist
             try {
+                const token = localStorage.getItem("token");
                 await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${movie.id}`, {
                     method: "DELETE",
                     credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // If you're using JWT, attach it to the Authorization header
+                        "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+                        "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                    },
                 });
                 setWatchlist(watchlist.filter((item) => item.id !== movie.id));
             } catch (err) {
@@ -52,9 +66,15 @@ const WatchlistPage: React.FC = () => {
         } else {
             // Add to watchlist
             try {
+                const token = localStorage.getItem("token");
                 await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        // If you're using JWT, attach it to the Authorization header
+                        "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
+                        "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+                    },
                     body: JSON.stringify(movie),
                     credentials: "include",
                 });
