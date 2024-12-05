@@ -445,13 +445,14 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
 
   return (
     <Popover
-      open={open}
       onOpenChange={(isOpen) => {
         setOpen(isOpen);
         if (isOpen) {
           setResults([]); // Reset results when reopening
+          setError("");   // Clear any error messages
         }
       }}
+
     >
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[300px] justify-between text-muted-foreground">
@@ -468,7 +469,11 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
             placeholder="Type to search..."
             value={query}
             onValueChange={setQuery}
-            onKeyDown={handleKeyPress}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
           />
           <CommandList>
             <CommandGroup>
