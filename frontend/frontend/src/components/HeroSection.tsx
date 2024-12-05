@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Bookmark, Play } from "lucide-react";
-import { useState, useEffect } from "react";
-import ReactPlayer from "react-player";
+import { useState } from "react";
+
 
 export interface Movie {
   release_date: string;
@@ -36,7 +36,9 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
     }
   };
 
-  // API request to mark a movie as watched
+
+
+
   const markMovieAsWatched = async (userId: string, movieId: string, watched: boolean) => {
     try {
       const token = localStorage.getItem("token"); // Retrieve user's token for authentication
@@ -60,6 +62,7 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
       throw error;
     }
   };
+
 
   if (!movie) {
     return <p className="text-center text-neutral-200">No movie to display</p>;
@@ -89,15 +92,22 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
             ))}
           </div>
           <p className="text-lg text-muted-foreground">{movie.overview}</p>
-          {/* Watch status toggle */}
-          <div className="movie-item">
-            <h3>{movie.title}</h3>
-            <button onClick={handleToggleWatched} className="text-white bg-blue-600 px-4 py-2 rounded">
+          <div className="flex gap-4">
+            <Button onClick={handleToggleWatched} className="text-white bg-blue-600 px-4 py-2 rounded">
               {isWatched ? "Unmark as Watched" : "Mark as Watched"}
-            </button>
+            </Button>
+            <Button variant="outline" size="lg" onClick={onWatchlistToggle}>
+              <Bookmark
+                className={`mr-2 h-4 w-4 ${inWatchlist ? "fill-current" : ""}`}
+              />
+              {inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
+            </Button>
           </div>
         </div>
       </div>
+
+
+
     </div>
   );
 };
