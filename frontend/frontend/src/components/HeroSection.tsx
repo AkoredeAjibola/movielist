@@ -27,12 +27,19 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
   // Function to toggle watched status
   const handleToggleWatched = async () => {
     try {
+      const userId = localStorage.getItem("userId"); // Retrieve userId securely
+      if (!userId) {
+        console.error("User ID is missing. Ensure the user is authenticated.");
+        return;
+      }
+
       // Toggle watched status
       const updatedMovie = await markMovieAsWatched(userId, movie.id, !isWatched);
-      setIsWatched(!isWatched);  // Toggle local state
+
+      setIsWatched(!isWatched); // Toggle local state
       onStatusUpdate(updatedMovie.watchHistory); // Update the parent's watch history state
     } catch (error) {
-      alert("Failed to update watched status.");
+      console.error("Failed to update watched status:", error.message);
     }
   };
 
