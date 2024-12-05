@@ -438,7 +438,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
 
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={true} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[300px] justify-between text-muted-foreground">
           <div className="flex items-center">
@@ -487,9 +487,9 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
                 {results.map((result) => (
                   <CommandItem key={result.id} onSelect={() => handleResultClick(result.id)}>
                     <div className="flex items-center space-x-2">
-                      {result.image && (
+                      {result.poster_path && (
                         <img
-                          src={`https://image.tmdb.org/t/p/w92/${result.image}`}
+                          src={`https://image.tmdb.org/t/p/w92${result.poster_path}`}
                           alt={result.title || result.name}
                           className="w-12 h-12 object-cover rounded"
                         />
