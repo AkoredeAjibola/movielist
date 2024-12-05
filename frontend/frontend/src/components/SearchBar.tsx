@@ -431,16 +431,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
 
 
   return (
-    <Popover
-      onOpenChange={(isOpen) => {
-        setOpen(isOpen);
-        if (isOpen) {
-          setResults([]); // Reset results when reopening
-          setError("");   // Clear any error messages
-        }
-      }}
-
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[300px] justify-between text-muted-foreground">
           <div className="flex items-center">
@@ -456,11 +447,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
             placeholder="Type to search..."
             value={query}
             onValueChange={setQuery}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
-            }}
+            onKeyDown={handleKeyPress}
           />
           <CommandList>
             <CommandGroup>
@@ -495,7 +482,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
                     <div className="flex items-center space-x-2">
                       {result.image && (
                         <img
-                          src={`https://image.tmdb.org/t/p/w92${result.image}`}
+                          src={`https://image.tmdb.org/t/p/w92/${result.image}`}
                           alt={result.title || result.name}
                           className="w-12 h-12 object-cover rounded"
                         />
