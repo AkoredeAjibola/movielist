@@ -187,10 +187,14 @@ export const SearchBar = ({ onDeleteHistory, searchHistory }: SearchBarProps) =>
     setError("");
 
     try {
+      const token = localStorage.getItem("token");
       const endpoint = searchEndpoints[searchType];
       const response = await fetch(`https://movielist-nl59.onrender.com${endpoint}${query}`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
         credentials: "include",
       });
 
