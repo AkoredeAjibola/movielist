@@ -49,7 +49,7 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
   const markMovieAsWatched = async (userId: string, movieId: string, watched: boolean) => {
     try {
       const token = localStorage.getItem("token"); // Retrieve user's token for authentication
-      const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watchlist/watched', {
+      const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

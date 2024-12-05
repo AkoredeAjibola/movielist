@@ -1,5 +1,31 @@
 import { WatchHistory } from '../models/watchHistory.js';
 
+
+
+
+export const markAsWatched = async (req, res) => {
+  try {
+    const { movieId, watched } = req.body;
+    const userId = req.user.id;
+
+    const history = await WatchHistory.findOneAndUpdate(
+      { user: userId, movieId },
+      { watched },
+      { new: true }
+    );
+
+    if (!history) {
+      return res.status(404).json({ message: "Movie not found in history" });
+    }
+
+    res.status(200).json({ success: true, message: "Watch status updated", history });
+  } catch (error) {
+    console.error('Error updating watch status:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
 export async function addWatchHistory(req, res) {
   const { movieId, movieTitle } = req.body;
 
