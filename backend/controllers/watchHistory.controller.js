@@ -1,4 +1,4 @@
-import { WatchHistory } from '../models/user.model.js';
+import { User } from '../models/user.model.js';
 
 
 
@@ -19,7 +19,7 @@ export const markAsWatched = async (req, res) => {
 
     console.log("User ID:", userId, "Movie ID:", movieId, "Watched:", watched);
 
-    const user = await user.findById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       console.log("User not found in database:", userId);
       return res.status(404).json({ message: "User not found" });
