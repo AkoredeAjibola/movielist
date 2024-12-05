@@ -155,11 +155,13 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface SearchBarProps {
-  onSearchHistoryDelete: (id: string) => void;
   searchHistory: { id: string; query: string; timestamp: string }[];
+  onSearch: (query: string) => void; // or some other function signature
+  onDeleteHistory: (id: string) => void; // or whatever matches the signature
+  onClearHistory: () => void;
 }
 
-export const SearchBar = ({ onSearchHistoryDelete, searchHistory }: SearchBarProps) => {
+export const SearchBar = ({ onDeleteHistory, searchHistory }: SearchBarProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchType, setSearchType] = useState("movie"); // Default to movie search
@@ -186,7 +188,7 @@ export const SearchBar = ({ onSearchHistoryDelete, searchHistory }: SearchBarPro
 
     try {
       const endpoint = searchEndpoints[searchType];
-      const response = await fetch(`${endpoint}${query}`, {
+      const response = await fetch(`https://movielist-nl59.onrender.com${endpoint}${query}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -255,13 +257,13 @@ export const SearchBar = ({ onSearchHistoryDelete, searchHistory }: SearchBarPro
                 </Button>
 
                 <Button
-                  variant={searchType === "person" ? "secondary" : "outline"}
+                  variant={searchType === "person" ? "default" : "outline"}
                   onClick={() => setSearchType("person")}
                 >
                   Actors
                 </Button>
                 <Button
-                  variant={searchType === "tv" ? "secondary" : "outline"}
+                  variant={searchType === "tv" ? "default" : "outline"}
                   onClick={() => setSearchType("tv")}
                 >
                   TV Shows
