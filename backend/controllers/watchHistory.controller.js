@@ -1,4 +1,4 @@
-import { WatchHistory } from '../models/watchHistory.js';
+import { WatchHistory } from '../models/user.model';
 
 
 
@@ -8,35 +8,40 @@ export const markAsWatched = async (req, res) => {
     const userId = req.user?.id;
 
     if (!movieId || typeof watched !== "boolean") {
+      console.log("Invalid request body:", req.body);
       return res.status(400).json({ message: "Invalid movie ID or watched status" });
     }
 
     if (!userId) {
+      console.log("User not authenticated:", req.user);
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    // Debug: Log the incoming data
-    console.log("Incoming Request Data:", { movieId, watched, userId });
+    console.log("User ID:", userId, "Movie ID:", movieId, "Watched:", watched);
 
-    const user = await User.findById(userId);
+    const user = await user.findById(userId);
     if (!user) {
+      console.log("User not found in database:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
     const movie = user.watchHistory.find((item) => item.movieId === movieId);
     if (!movie) {
+      console.log("Movie not found in user's watch history:", movieId);
       return res.status(404).json({ message: "Movie not found in watch history" });
     }
 
     movie.watched = watched;
     await user.save();
 
-    res.status(200).json({ message: "Movie status updated", watchHistory: user.watchHistory });
+    console.log("Watch status updated successfully for movie:", movieId);
+    return res.status(200).json({ message: "Movie status updated", watchHistory: user.watchHistory });
   } catch (error) {
-    console.error("Error in markAsWatched controller:", error.message, error.stack);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error in markAsWatched controller:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 

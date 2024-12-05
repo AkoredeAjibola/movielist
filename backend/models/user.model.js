@@ -22,10 +22,12 @@ const userSchema = mongoose.Schema({
 		type: [String],
 		default: [],
 	  },
-		watchHistory: {
-			type: [String],
-			default: [],
-		  },
+	  watchHistory: [
+		{
+		  movieId: { type: String, required: true },
+		  watched: { type: Boolean, default: false },
+		},
+	  ],
 		streaks: { type: Number, default: 0 },
 		lastWatchedDate: { type: Date },
 		watchlist: [
