@@ -6,22 +6,26 @@ import { WatchHistory } from '../models/watchHistory.js';
 export const markAsWatched = async (req, res) => {
   try {
     const { movieId, watched } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.id; // req.user should be populated by the auth middleware
 
-    const history = await WatchHistory.findOneAndUpdate(
-      { user: userId, movieId },
-      { watched },
-      { new: true }
-    );
-
-    if (!history) {
-      return res.status(404).json({ message: "Movie not found in history" });
+    if (!movieId || watched === undefined) {
+      return res.status(400).json({ message: "Movie ID and watched status are required." });
     }
 
-    res.status(200).json({ success: true, message: "Watch status updated", history });
+    // Example logic for updating the movie status in the watch history
+    const user = await User.findById(userId);
+    const movie = user.watchHistory.find((item) => item.movieId === movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found in watch history." });
+    }
+
+    movie.watched = watched;
+    await user.save();
+
+    res.status(200).json({ message: "Movie status updated", watchHistory: user.watchHistory });
   } catch (error) {
-    console.error('Error updating watch status:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error updating movie status:", error.message);
+    res.status(500).json({ message: "Failed to update movie status" });
   }
 };
 

@@ -27,17 +27,9 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
   // Function to toggle watched status
   const handleToggleWatched = async () => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve token
-      if (!token) {
-        console.error("Token is missing. Ensure the user is authenticated.");
-        return;
-      }
-
-      // Toggle watched status
-      const updatedMovie = await markMovieAsWatched(token, movie.id, !isWatched);
-
-      setIsWatched(!isWatched); // Toggle local state
-      onStatusUpdate(updatedMovie.watchHistory); // Update the parent's watch history state
+      const updatedMovie = await markMovieAsWatched(movie.id, !isWatched);
+      setIsWatched(!isWatched); // Update the local state
+      onStatusUpdate(updatedMovie.watchHistory); // Pass updated history to parent
     } catch (error) {
       console.error("Failed to update watched status:", error.message);
     }
@@ -47,16 +39,16 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
 
 
 
-  const markMovieAsWatched = async (userId: string, movieId: string, watched: boolean) => {
+  const markMovieAsWatched = async (movieId: string, watched: boolean) => {
     try {
       const token = localStorage.getItem("token"); // Retrieve user's token for authentication
       const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
-        method: "PuT",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId, movieId, watched }),
+        body: JSON.stringify({ movieId, watched }),
       });
 
       if (!response.ok) {
