@@ -438,7 +438,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
 
 
   return (
-    <Popover open={true} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[300px] justify-between text-muted-foreground">
           <div className="flex items-center">
