@@ -404,7 +404,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
 
   const handleResultClick = (id) => {
     if (searchType === "movie") {
-      navigate(`/movies/${id}`);
+      navigate(`/movie/${id}`);
     } else if (searchType === "person") {
       navigate(`/people/${id}`);
     } else if (searchType === "tv") {
