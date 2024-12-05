@@ -7,6 +7,6 @@ const router = express.Router();
 router.post('/add', protectRoute, addWatchHistory);
 router.get('/', protectRoute, getWatchHistory);
 router.delete('/:id', protectRoute, deleteWatchHistory);
-router.post("/watched", protectRoute, markAsWatched);
+router.put("/watched", protectRoute, markAsWatched);
 
 export default router;
