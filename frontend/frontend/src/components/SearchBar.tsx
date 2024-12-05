@@ -430,19 +430,6 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
   };
 
 
-  useEffect(() => {
-    if (open && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (results.length > 0 || loading || error) {
-      console.log("CommandList state updated");
-    }
-  }, [results, loading, error]);
-
-
   return (
     <Popover
       onOpenChange={(isOpen) => {
