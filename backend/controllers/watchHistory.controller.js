@@ -1,4 +1,4 @@
-import { WatchHistory } from '../models/user.model';
+import { WatchHistory } from '../models/user.model.js';
 
 
 
