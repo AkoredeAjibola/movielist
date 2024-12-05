@@ -402,13 +402,13 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
     }
   };
 
-  const handleResultClick = (result) => {
+  const handleResultClick = (id) => {
     if (searchType === "movie") {
-      navigate(`/movies/${result.id}`);
+      navigate(`/movies/${id}`);
     } else if (searchType === "person") {
-      navigate(`/people/${result.id}`);
+      navigate(`/people/${id}`);
     } else if (searchType === "tv") {
-      navigate(`/tvshows/${result.id}`);
+      navigate(`/tvshows/${id}`);
     }
     setOpen(false); // Close the search bar on navigation
   };
