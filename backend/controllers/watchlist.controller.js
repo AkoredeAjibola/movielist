@@ -67,21 +67,27 @@ export const markAsWatched = async (req, res) => {
   try {
     const { userId, movieId, watched } = req.body;
 
+    // Find user by userId
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const movie = user.watchlist.find((item) => item.id === movieId);
-    if (!movie) {
-      return res.status(404).json({ message: "Movie not found in watchlist" });
+    // Check if the movie is already in the watch history
+    const movieIndex = user.watchHistory.findIndex((item) => item.id === movieId);
+
+    if (watched && movieIndex === -1) {
+      // Add movie to the watch history
+      user.watchHistory.push({ id: movieId, watchedDate: new Date() });
+    } else if (!watched && movieIndex !== -1) {
+      // Remove movie from the watch history if it's unmarked
+      user.watchHistory.splice(movieIndex, 1);
     }
 
-    movie.watched = watched;
     await user.save();
 
-    res.status(200).json({ message: "Movie status updated", watchlist: user.watchlist });
+    res.status(200).json({ message: "Watch history updated", watchHistory: user.watchHistory });
   } catch (error) {
-    res.status(500).json({ error: "Failed to update movie status" });
+    res.status(500).json({ error: "Failed to update watch history" });
   }
 };
