@@ -362,6 +362,13 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
     localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
   }, [searchHistory]);
 
+  useEffect(() => {
+    if (results.length > 0) {
+      setOpen(true); // Ensure the popover opens when there are results
+    }
+  }, [results]);
+
+
   const handleSearch = async () => {
     if (!query.trim()) {
       setResults([]);
