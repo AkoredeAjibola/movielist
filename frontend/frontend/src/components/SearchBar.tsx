@@ -429,8 +429,30 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
     }
   };
 
+
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (results.length > 0 || loading || error) {
+      console.log("CommandList state updated");
+    }
+  }, [results, loading, error]);
+
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        if (isOpen) {
+          setResults([]); // Reset results when reopening
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button variant="outline" className="w-[300px] justify-between text-muted-foreground">
           <div className="flex items-center">
