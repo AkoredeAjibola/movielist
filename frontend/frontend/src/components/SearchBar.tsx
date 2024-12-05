@@ -477,7 +477,7 @@ export const SearchBar = ({ onSearch, onDeleteHistory, onClearHistory }: SearchB
             {results.length > 0 && (
               <CommandGroup>
                 {results.map((result) => (
-                  <CommandItem key={result.id} onSelect={() => handleResultClick(result)}>
+                  <CommandItem key={result.id} onSelect={() => handleResultClick(result.id)}>
                     <div className="flex items-center space-x-2">
                       {result.image && (
                         <img
