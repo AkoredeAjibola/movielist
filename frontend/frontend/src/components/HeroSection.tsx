@@ -27,7 +27,7 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
   // Function to toggle watched status
   const handleToggleWatched = async () => {
     try {
-      const userId = localStorage.getItem("userId"); // Retrieve userId securely
+      const userId = localStorage.getItem("token"); // Retrieve userId securely
       if (!userId) {
         console.error("User ID is missing. Ensure the user is authenticated.");
         return;
