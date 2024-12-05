@@ -2,9 +2,11 @@ import { User } from '../models/user.model.js';
 
 
 
+import { User } from '../models/user.model.js';
+
 export const markAsWatched = async (req, res) => {
   try {
-    const { movieId, watched } = req.body;
+    const { movieId, watched, movieTitle } = req.body;
     const userId = req.user?.id; // Assuming req.user is populated after token validation
 
     if (!userId) {
@@ -17,16 +19,17 @@ export const markAsWatched = async (req, res) => {
     }
 
     // Check if the movie already exists in the user's watch history
-    const existingMovie = user.watchHistory.find((item) => item.movieId === movieId);
+    const existingMovieIndex = user.watchHistory.findIndex((item) => item.movieId === movieId);
 
-    if (existingMovie) {
+    if (existingMovieIndex !== -1) {
       // Movie exists, update the watched status
-      existingMovie.watched = watched;
+      user.watchHistory[existingMovieIndex].watched = watched;
+      user.watchHistory[existingMovieIndex].watchedAt = new Date(); // Mark the time when watched status is updated
       await user.save();
       return res.status(200).json({ message: "Watch status updated", watchHistory: user.watchHistory });
     } else {
-      // Movie does not exist in the history, add it
-      user.watchHistory.push({ movieId, watched });
+      // Movie does not exist in the history, add it without repetition
+      user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
       await user.save();
       return res.status(201).json({ message: "Movie added to watch history", watchHistory: user.watchHistory });
     }
@@ -36,36 +39,24 @@ export const markAsWatched = async (req, res) => {
 };
 
 
-
-export async function addWatchHistory(req, res) {
-  const { movieId, movieTitle } = req.body;
-
-  if (!movieId || !movieTitle) {
-    return res.status(400).json({ success: false, message: 'Movie ID and title are required.' });
-  }
-
-  try {
-    const newHistory = new User({
-      user: req.user.id, // Ensure you're using authentication middleware
-      movieId,
-      movieTitle,
-    });
-
-    await newHistory.save();
-    res.status(201).json({ success: true, message: 'Watch history added successfully', history: newHistory });
-  } catch (error) {
-    console.error('Error adding to watch history:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-}
-
 export async function getWatchHistory(req, res) {
   try {
-    const history = await User.find({ user: req.user.id }).sort({ watchedAt: -1 });
-    res.status(200).json({ success: true, history });
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Unauthorized: User not found" });
+    }
+
+    const user = await User.findById(userId).select("watchHistory").sort({ "watchHistory.watchedAt": -1 });
+
+    if (!user || !user.watchHistory) {
+      return res.status(404).json({ success: false, message: "No watch history found" });
+    }
+
+    res.status(200).json({ success: true, history: user.watchHistory });
   } catch (error) {
-    console.error('Error fetching watch history:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("Error fetching watch history:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
 

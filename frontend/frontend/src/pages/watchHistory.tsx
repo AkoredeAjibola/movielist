@@ -14,24 +14,20 @@ const WatchHistoryPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Function to fetch watch history
   const fetchHistory = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watch-history", {
-        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          // If you're using JWT, attach it to the Authorization header
-          "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
-          "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+          "Authorization": `Bearer ${token}`,
         },
-
       });
       const data = await response.json();
 
       if (data.success) {
-        setHistory(data.history);
+        setHistory(data.history); // Update the local state with the fetched history
       } else {
         throw new Error(data.message || "Failed to fetch history.");
       }
@@ -42,25 +38,24 @@ const WatchHistoryPage: React.FC = () => {
     }
   };
 
+  // Function to delete a history item
   const deleteHistoryItem = async (id: string) => {
     try {
       const token = localStorage.getItem("token");
       await fetch(`https://movielist-nl59.onrender.com/api/v1/watch-history/${id}`, {
         method: "DELETE",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          // If you're using JWT, attach it to the Authorization header
-          "Authorization": `Bearer ${token}`,// Add Bearer token to the Authorization header if token exists
-          "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+          "Authorization": `Bearer ${token}`,
         },
       });
-      setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id));
+      setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id)); // Remove item from state after deletion
     } catch (err) {
       console.error("Failed to delete history item:", err);
     }
   };
 
+  // Fetch history on component mount
   useEffect(() => {
     fetchHistory();
   }, []);
