@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Bookmark, Play } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 
 export interface Movie {
@@ -17,25 +17,47 @@ export interface HeroSectionProps {
   movie: Movie;
   inWatchlist: boolean;
   onWatchlistToggle: () => void;
+  userId: string; // Assuming the userId is passed from parent
+  onStatusUpdate: (updatedWatchHistory) => void; // Function to update watch history in parent component
 }
-export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle }: HeroSectionProps) => {
-  const [streamUrl, setStreamUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
+export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onStatusUpdate }: HeroSectionProps) => {
+  const [isWatched, setIsWatched] = useState(false);
 
-  const handlePlayMovie = async () => {
+  // Function to toggle watched status
+  const handleToggleWatched = async () => {
     try {
-      const response = await fetch(`/api/stream/${movie.id}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setStreamUrl(data.url); // Set the streaming URL
-        setIsPlaying(true); // Show the video player
-      } else {
-        console.error("Error fetching stream URL:", data.message);
-      }
+      // Toggle watched status
+      const updatedMovie = await markMovieAsWatched(userId, movie.id, !isWatched);
+      setIsWatched(!isWatched);  // Toggle local state
+      onStatusUpdate(updatedMovie.watchHistory); // Update the parent's watch history state
     } catch (error) {
-      console.error("Error fetching stream URL:", error);
+      alert("Failed to update watched status.");
+    }
+  };
+
+  // API request to mark a movie as watched
+  const markMovieAsWatched = async (userId: string, movieId: string, watched: boolean) => {
+    try {
+      const token = localStorage.getItem("token"); // Retrieve user's token for authentication
+      const response = await fetch(`/api/v1/watch-history/mark-as-watched`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId, movieId, watched }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update movie status.");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error updating movie status:", error.message);
+      throw error;
     }
   };
 
@@ -67,39 +89,15 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle }: HeroSecti
             ))}
           </div>
           <p className="text-lg text-muted-foreground">{movie.overview}</p>
-          <div className="flex gap-4">
-            <Button size="lg">
-              <Play className="mr-2 h-4 w-4" onClick={handlePlayMovie} /> Play Now
-            </Button>
-            <Button variant="outline" size="lg" onClick={onWatchlistToggle}>
-              <Bookmark
-                className={`mr-2 h-4 w-4 ${inWatchlist ? "fill-current" : ""}`}
-              />
-              {inWatchlist ? "Remove from Watchlist" : "Add to Watchlist"}
-            </Button>
+          {/* Watch status toggle */}
+          <div className="movie-item">
+            <h3>{movie.title}</h3>
+            <button onClick={handleToggleWatched} className="text-white bg-blue-600 px-4 py-2 rounded">
+              {isWatched ? "Unmark as Watched" : "Mark as Watched"}
+            </button>
           </div>
         </div>
       </div>
-      {/* Video Player */}
-      {isPlaying && streamUrl && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50">
-          <ReactPlayer
-            url={streamUrl}
-            playing
-            controls
-            width="80%"
-            height="80%"
-          />
-          <button
-            className="absolute top-4 right-4 text-white bg-red-500 rounded px-4 py-2"
-            onClick={() => setIsPlaying(false)}
-          >
-            Close
-          </button>
-        </div>
-      )}
-
-
     </div>
   );
 };
