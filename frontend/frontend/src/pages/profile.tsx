@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StreakTracker } from "@/components/WatchStreak";
 
 const ProfilePage = () => {
@@ -8,25 +8,34 @@ const ProfilePage = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setError("You need to log in to access your profile.");
+                return;
+            }
+
             setLoading(true);
             try {
-                const token = localStorage.getItem("token");
                 const response = await fetch("https://movielist-nl59.onrender.com/api/v1/profile", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                const data = await response.json();
 
+                if (!response.ok) {
+                    throw new Error("Failed to fetch profile data.");
+                }
+
+                const data = await response.json();
                 if (data.success) {
                     setProfile(data.profile);
-                    console.log("Fetched Profile Data:", data.profile); // Log to check the data
+                    console.log("Fetched Profile Data:", data.profile);
                 } else {
-                    throw new Error(data.message || "Failed to fetch profile.");
+                    throw new Error(data.message || "An error occurred.");
                 }
             } catch (err) {
                 setError(err.message || "Something went wrong.");
-                console.error(err); // Log error
+                console.error(err);
             } finally {
                 setLoading(false);
             }
@@ -34,6 +43,7 @@ const ProfilePage = () => {
 
         fetchProfile();
     }, []);
+
 
     if (loading) return <p>Loading profile...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -64,8 +74,11 @@ const ProfilePage = () => {
                 </div>
                 <div>
                     <p className="text-sm text-muted-foreground">Watchlist Count</p>
-                    <p className="text-lg font-semibold">{profile.watchlistCount}</p>
+                    <p className="text-lg font-semibold">
+                        {profile.watchlistCount !== undefined ? profile.watchlistCount : "N/A"}
+                    </p>
                 </div>
+
             </div>
 
             {/* Preferences */}
