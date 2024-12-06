@@ -4,13 +4,13 @@ import { User } from '../models/user.model.js';
 export const markAsWatched = async (req, res) => {
   try {
     // Extract movieId, watched status, and title from the request body
-    const {movieId, watched, title } = req.body;
+    const {movieId, watched, movieTitle } = req.body;
 
     // Log the request body for debugging
     console.log("Request Body:", req.body);
 
     // Validate required fields
-    if (!movieId || !title || watched === undefined) {
+    if (!movieId || !movieTitle || watched === undefined) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -36,7 +36,7 @@ export const markAsWatched = async (req, res) => {
       existingMovie.watchedAt = new Date();
     } else {
       // Add a new entry to the watch history
-      user.watchHistory.push({ movieId, title, watched, watchedAt: new Date() });
+      user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
     }
 
     // Save the updated user document
