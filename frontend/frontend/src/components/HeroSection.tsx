@@ -74,7 +74,7 @@ export const HeroSection = ({
       const token = localStorage.getItem("token")
       const url = watched
         ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched' // Mark as watched endpoint
-        : 'https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}';
+        : `https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}`;
 
       const method = watched ? 'PUT' : 'DELETE';
 
