@@ -70,6 +70,7 @@ export const HeroSection = ({
 
   const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
     try {
+
       const token = localStorage.getItem("token")
       const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
         method: 'PUT',
@@ -81,7 +82,7 @@ export const HeroSection = ({
         },
 
 
-        body: JSON.stringify({ movieId: movie.id, movieTitle: movie.title, watched }),
+        body: JSON.stringify({ movieId, movieTitle, watched }),
       });
 
       const data = await response.json();
