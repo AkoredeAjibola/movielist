@@ -3,54 +3,48 @@ import { User } from '../models/user.model.js';
 
 export const markAsWatched = async (req, res) => {
   try {
-    // Extract movieId, watched status, and title from the request body
-    const {movieId,  movieTitle, watched } = req.body;
+    const { movieId, movieTitle, watched } = req.body;
 
-    // Log the request body for debugging
-    console.log("Request Body:", req.body);
-
-    // Validate required fields
-    if (!movieId || !movieTitle || watched === undefined) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!movieId || watched === undefined) {
+      return res.status(400).json({ message: "Missing required fields: movieId or watched" });
     }
 
-    // Get the user ID from the authenticated user
+    if (!movieTitle) {
+      return res.status(400).json({ message: "movieTitle is required" });
+    }
+
     const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
     }
 
-    // Find the user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if the movie already exists in the user's watch history
     const existingMovie = user.watchHistory.find((item) => item.movieId === movieId);
 
     if (existingMovie) {
-      // Update existing movie's watched status and timestamp
       existingMovie.watched = watched;
       existingMovie.watchedAt = new Date();
     } else {
-      // Add a new entry to the watch history
       user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
     }
 
-    // Save the updated user document
     await user.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       message: existingMovie ? "Watch status updated" : "Movie added to watch history",
       watchHistory: user.watchHistory,
     });
   } catch (error) {
     console.error("Error in markAsWatched:", error);
-    return res.status(500).json({ error: error.message || "Failed to update watch status" });
+    res.status(500).json({ error: error.message || "Failed to update watch status" });
   }
 };
+
 
 
 
