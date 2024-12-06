@@ -14,6 +14,7 @@ import WatchHistoryPage from "./pages/watchHistory";
 import RemindersPage from "./pages/reminders";
 import WatchlistPage from "./pages/WatchList";
 import MovieDetails from "./pages/MovieDetails";
+import ProfilePage from "./pages/profile";
 
 
 const queryClient = new QueryClient({
@@ -35,7 +36,7 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/profile" element={<Signup />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/watchhistory" element={<WatchHistoryPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="/reminders" element={<RemindersPage />} />
