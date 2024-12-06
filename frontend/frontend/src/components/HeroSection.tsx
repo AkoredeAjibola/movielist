@@ -76,8 +76,10 @@ export const HeroSection = ({
         ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched' // Mark as watched endpoint
         : 'https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}';
 
+      const method = watched ? 'PUT' : 'DELETE';
+
       const response = await fetch(url, {// Mark as unwatched endpoint, {
-        method: 'PUT',
+        method,
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
