@@ -81,7 +81,7 @@ export const HeroSection = ({
         },
 
 
-        body: JSON.stringify({ movieId, movieTitle, watched }),
+        body: JSON.stringify({ movieId, movieTitle: movie.title, watched }),
       });
 
       const data = await response.json();
