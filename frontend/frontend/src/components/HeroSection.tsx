@@ -10,7 +10,8 @@ export interface Movie {
   overview: string;
   poster_path: string;
   backdropPath: string;
-  genre_ids: number[];
+  genre_ids: [];
+  genres: { id: number; name: string }[];
 }
 
 export interface HeroSectionProps {

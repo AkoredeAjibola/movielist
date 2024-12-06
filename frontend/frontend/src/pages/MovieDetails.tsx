@@ -14,28 +14,28 @@ const MovieDetailsPage: React.FC = () => {
     const [error, setError] = useState<string>("");
 
 
-    const genreMap: { [key: number]: string } = {
-        28: "Action",
-        12: "Adventure",
-        16: "Animation",
-        35: "Comedy",
-        80: "Crime",
-        99: "Documentary",
-        18: "Drama",
-        10751: "Family",
-        14: "Fantasy",
-        36: "History",
-        27: "Horror",
-        10402: "Music",
-        9648: "Mystery",
-        10749: "Romance",
-        878: "Science Fiction",
-        10770: "TV Movie",
-        53: "Thriller",
-        10752: "War",
-        37: "Western",
-        // Add more genres if necessary
-    };
+    // const genreMap: { [key: number]: string } = {
+    //     28: "Action",
+    //     12: "Adventure",
+    //     16: "Animation",
+    //     35: "Comedy",
+    //     80: "Crime",
+    //     99: "Documentary",
+    //     18: "Drama",
+    //     10751: "Family",
+    //     14: "Fantasy",
+    //     36: "History",
+    //     27: "Horror",
+    //     10402: "Music",
+    //     9648: "Mystery",
+    //     10749: "Romance",
+    //     878: "Science Fiction",
+    //     10770: "TV Movie",
+    //     53: "Thriller",
+    //     10752: "War",
+    //     37: "Western",
+    //     // Add more genres if necessary
+    // };
 
     const fetchMovies = async (
         endpoint: string,
@@ -88,7 +88,11 @@ const MovieDetailsPage: React.FC = () => {
             console.log("Movie Details Response:", data);
 
             if (data.success) {
-                setMovieDetails(data.content);
+                // Assuming 'genres' comes as an array of objects with 'id' and 'name'
+                setMovieDetails({
+                    ...data.content,
+                    genres: data.content.genres || [], // Ensure genres are set
+                });
             } else {
                 console.error("Failed to fetch movie details:", data.message);
             }
@@ -117,7 +121,7 @@ const MovieDetailsPage: React.FC = () => {
 
 
     console.log("Movie Details:", movieDetails); // Check the full movie details object
-    console.log("Genre IDs:", movieDetails?.genre_ids); // Check just genre_ids
+    console.log("Genre IDs:", movieDetails?.genres); // Check just genre_ids
 
 
     return (
@@ -150,13 +154,14 @@ const MovieDetailsPage: React.FC = () => {
                     <div className="mt-2 md:mt-0">
                         <span className="text-lg font-medium text-gray-400">
                             Genres:{" "}
-                            {movieDetails?.genre_ids && movieDetails.genre_ids.length > 0 // Check if genre_ids exists
-                                ? movieDetails.genre_ids
-                                    .map((id) => genreMap[id] || "Unknown Genre") // Map IDs to names
+                            {movieDetails?.genres && movieDetails.genres.length > 0
+                                ? movieDetails.genres
+                                    .map((genre) => genre.name) // Access the 'name' property from the genre object
                                     .join(", ")
-                                : "N/A"} {/* Fallback for empty genre_ids */}
+                                : "N/A"} {/* Fallback for empty genres */}
                         </span>
                     </div>
+
                 </div>
 
                 {/* Overview */}
