@@ -6,7 +6,7 @@ import { StreakTracker } from "@/components/WatchStreak";
 interface WatchHistoryItem {
   id: string;
   movieId: string;
-  title: string;
+  movieTitle: string;
   watchedAt: string;
 }
 
@@ -93,7 +93,7 @@ const WatchHistoryPage: React.FC = () => {
                 className="flex justify-between items-center border p-4 rounded-lg bg-neutral-800"
               >
                 <div>
-                  <h3 className="text-xl font-semibold">{item.title}</h3>
+                  <h3 className="text-xl font-semibold">{item.movieTitle}</h3>
                   <p className="text-sm text-muted-foreground">
                     Watched on {new Date(item.watchedAt).toLocaleDateString()}
                   </p>
