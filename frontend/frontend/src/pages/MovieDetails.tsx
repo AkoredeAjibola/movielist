@@ -1,103 +1,139 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MovieCard } from "../components/MovieCard";
-import { Movie } from "@/components/HeroSection";
 import { Navigation } from "@/components/Navigation";
+import { Button } from "@/components/ui/button";
 
 const BASE_URL = "https://movielist-nl59.onrender.com";
 
-const MovieDetailsPage: React.FC = () => {
+export interface Movie {
+    release_date: string;
+    id: string;
+    title: string;
+    overview: string;
+    poster_path: string;
+    backdropPath: string;
+    genre_ids: [];
+    genres: { id: number; name: string }[];
+}
+
+export interface MovieDetailsProps {
+    movie: Movie;
+    inWatchlist: boolean;
+    onWatchlistToggle: () => void;
+    userId: string; // Assuming the userId is passed from parent
+    onStatusUpdate: (updatedWatchHistory) => void; // Function to update watch history in parent component
+}
+
+const MovieDetailsPage: React.FC = ({
+    movie,
+    inWatchlist,
+    onWatchlistToggle,
+    userId,
+    onStatusUpdate,
+}: MovieDetailsProps) => {
     const { id } = useParams<{ id: string }>();
     const [movieDetails, setMovieDetails] = useState<Movie | null>(null);
     const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
-    const [isInWatchlist, setIsInWatchlist] = useState(false);
+    const [isInWatchlist, setIsInWatchlist] = useState(inWatchlist);
     const [error, setError] = useState<string>("");
+    const [isWatched, setIsWatched] = useState(false);
+    const [loading, setLoading] = useState(true); // For loading state
 
+    const handleToggleWatched = async () => {
+        try {
+            const updatedMovie = await markAsWatched(movie.id, movie.title, !isWatched);
+            setIsWatched(!isWatched);
+            onStatusUpdate(updatedMovie.watchHistory);
+        } catch (error) {
+            console.error("Failed to update watched status:", error.message);
+        }
+    };
 
-    // const genreMap: { [key: number]: string } = {
-    //     28: "Action",
-    //     12: "Adventure",
-    //     16: "Animation",
-    //     35: "Comedy",
-    //     80: "Crime",
-    //     99: "Documentary",
-    //     18: "Drama",
-    //     10751: "Family",
-    //     14: "Fantasy",
-    //     36: "History",
-    //     27: "Horror",
-    //     10402: "Music",
-    //     9648: "Mystery",
-    //     10749: "Romance",
-    //     878: "Science Fiction",
-    //     10770: "TV Movie",
-    //     53: "Thriller",
-    //     10752: "War",
-    //     37: "Western",
-    //     // Add more genres if necessary
-    // };
+    const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("User is not authenticated");
 
-    const fetchMovies = async (
-        endpoint: string,
-        setter: React.Dispatch<React.SetStateAction<Movie[]>>
-    ): Promise<void> => {
+        try {
+            const url = watched
+                ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched' // Mark as watched endpoint
+                : `https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}`;
+
+            const method = watched ? 'PUT' : 'DELETE';
+
+            const response = await fetch(url, {
+                method,
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                },
+                body: JSON.stringify({ movieId, movieTitle, watched }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to mark as watched');
+            }
+
+            return data; // Return the updated data
+        } catch (error) {
+            console.error('Error marking movie as watched:', error);
+            throw error;
+        }
+    };
+
+    const fetchMovies = async (endpoint: string, setter: React.Dispatch<React.SetStateAction<Movie[]>>) => {
         const token = localStorage.getItem("token");
 
         try {
-            console.log(`Fetching from URL: ${BASE_URL}/${endpoint}`);
-
             const response = await fetch(`${BASE_URL}/${endpoint}`, {
                 headers: {
                     Authorization: token ? `Bearer ${token}` : "",
                 },
             });
 
-            // Check if response is okay
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
 
-            // Parse the response as JSON
             const data = await response.json();
-            console.log("API response:", data); // Log entire response
-
-            // Ensure success and correct structure
             if (data.success && Array.isArray(data.similar)) {
-                console.log("Fetched similar movies:", data.similar); // Log similar movies
-                setter(data.similar); // Update state with the results
+                setter(data.similar);
             } else {
-                console.error("Unexpected data format. Expected 'similar' to be an array.", data);
-                throw new Error("Failed to fetch movies. Unexpected data format.");
+                throw new Error("Failed to fetch similar movies");
             }
         } catch (err) {
-            console.error("Error fetching movies:", err);
-            setError((err as Error).message || "Something went wrong");
+            setError("Error fetching movies: " + (err instanceof Error ? err.message : "Unknown error"));
         }
     };
 
-
     const fetchMovieDetails = async () => {
         const token = localStorage.getItem("token");
+
         try {
             const response = await fetch(`${BASE_URL}/api/v1/movie/${id}/details`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+
             const data = await response.json();
-            console.log("Movie Details Response:", data);
 
             if (data.success) {
-                // Assuming 'genres' comes as an array of objects with 'id' and 'name'
                 setMovieDetails({
                     ...data.content,
-                    genres: data.content.genres || [], // Ensure genres are set
+                    genres: data.content.genres || [],
                 });
             } else {
-                console.error("Failed to fetch movie details:", data.message);
+                throw new Error(data.message || "Failed to fetch movie details");
             }
         } catch (error) {
-            console.error("Error fetching movie details:", error);
+            setError("Error fetching movie details: " + (error instanceof Error ? error.message : "Unknown error"));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -110,69 +146,49 @@ const MovieDetailsPage: React.FC = () => {
         setIsInWatchlist(!isInWatchlist);
     };
 
-    const handlePlayMovie = () => {
-        if (!movieDetails) return;
-        console.log("Play movie:", movieDetails.title);
-    };
-
-    if (!movieDetails) {
+    if (loading) {
         return <p>Loading movie details...</p>;
     }
 
-
-
+    if (error) {
+        return <p className="text-center text-red-500">{error}</p>;
+    }
 
     return (
         <div>
             <Navigation />
-            {/* Full-screen Movie Poster */}
             <div className="relative">
                 <img
                     src={`https://image.tmdb.org/t/p/original${movieDetails.backdropPath || movieDetails.poster_path}`}
                     alt={movieDetails.title}
                     className="w-full h-auto"
                 />
-                {/* Optional overlay for better text visibility */}
                 <div className="absolute inset-0 bg-black bg-opacity-50"></div>
             </div>
 
-            {/* Movie Details */}
             <div className="container py-8 text-white">
                 <h1 className="text-4xl font-bold">{movieDetails.title}</h1>
                 <div className="mt-4 flex flex-col md:flex-row md:items-center">
-                    {/* Release Date */}
                     <span className="text-lg font-medium text-gray-400">
                         Release Date: {movieDetails.release_date || "N/A"}
                     </span>
-
-                    {/* Separator for aesthetics */}
                     <span className="hidden md:block mx-4 text-gray-600">|</span>
-
-                    {/* Genres */}
                     <div className="mt-2 md:mt-0">
                         <span className="text-lg font-medium text-gray-400">
                             Genres:{" "}
-                            {movieDetails?.genres && movieDetails.genres.length > 0
-                                ? movieDetails.genres
-                                    .map((genre) => genre.name) // Access the 'name' property from the genre object
-                                    .join(", ")
-                                : "N/A"} {/* Fallback for empty genres */}
+                            {movieDetails?.genres.length > 0
+                                ? movieDetails.genres.map((genre) => genre.name).join(", ")
+                                : "N/A"}
                         </span>
                     </div>
-
                 </div>
 
-                {/* Overview */}
                 <p className="mt-6 text-lg">{movieDetails.overview}</p>
 
-                {/* Play and Watchlist Buttons */}
                 <div className="mt-8 flex gap-4">
-                    <button
-                        className="bg-blue-500 text-white py-2 px-4 rounded"
-                        onClick={handlePlayMovie}
-                    >
-                        Play
-                    </button>
+                    <Button onClick={handleToggleWatched} className="text-white bg-blue-600 px-4 py-2 rounded">
+                        {isWatched ? "Unmark as Watched" : "Mark as Watched"}
+                    </Button>
                     <button
                         className="py-2 px-4 border border-blue-500 text-blue-500 rounded"
                         onClick={handleWatchlistToggle}
@@ -182,11 +198,10 @@ const MovieDetailsPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Similar Movies */}
             <section className="container mt-8 text-white">
                 <h3 className="text-2xl font-semibold mb-4">Similar Movies</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                    {Array.isArray(similarMovies) && similarMovies.length > 0 ? (
+                    {similarMovies.length > 0 ? (
                         similarMovies.map((movie) => (
                             <MovieCard
                                 key={movie.id}
@@ -204,6 +219,6 @@ const MovieDetailsPage: React.FC = () => {
             </section>
         </div>
     );
-}
+};
 
 export default MovieDetailsPage;
