@@ -75,6 +75,7 @@ export const HeroSection = ({
         method: 'PUT',
         credentials: "include",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
