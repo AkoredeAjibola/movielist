@@ -72,7 +72,11 @@ export const HeroSection = ({
     try {
 
       const token = localStorage.getItem("token")
-      const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
+      const url = watched
+        ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched' // Mark as watched endpoint
+        : 'https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}';
+
+      const response = await fetch(url, {// Mark as unwatched endpoint, {
         method: 'PUT',
         credentials: "include",
         headers: {
