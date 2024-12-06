@@ -3,11 +3,19 @@ import { User } from '../models/user.model.js';
 
 export const markAsWatched = async (req, res) => {
   try {
-    // Extract movieId and watched status from the request body
-    const { watched} = req.body;
+    // Extract movieId, watched status, and title from the request body
+    const { id, watched, title } = req.body;
+
+    // Log the request body for debugging
+    console.log("Request Body:", req.body);
+
+    // Validate required fields
+    if (!id || !title || watched === undefined) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     // Get the user ID from the authenticated user
-    const userId = req.user?.id; // Assuming req.user is populated after token validation
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
@@ -23,18 +31,23 @@ export const markAsWatched = async (req, res) => {
     const existingMovie = user.watchHistory.find((item) => item.movieId === movieId);
 
     if (existingMovie) {
-      // Movie exists, update the watched status
+      // Update existing movie's watched status and timestamp
       existingMovie.watched = watched;
-      existingMovie.watchedAt = new Date(); // Mark the time when watched status is updated
-      await user.save();
-      return res.status(200).json({ message: "Watch status updated", watchHistory: user.watchHistory });
+      existingMovie.watchedAt = new Date();
     } else {
-      // Movie does not exist in the history, add it
-      user.watchHistory.push({ movieId, title,  watched, watchedAt: new Date() });
-      await user.save();
-      return res.status(201).json({ message: "Movie added to watch history", watchHistory: user.watchHistory });
+      // Add a new entry to the watch history
+      user.watchHistory.push({ movieId, title, watched, watchedAt: new Date() });
     }
+
+    // Save the updated user document
+    await user.save();
+
+    return res.status(200).json({
+      message: existingMovie ? "Watch status updated" : "Movie added to watch history",
+      watchHistory: user.watchHistory,
+    });
   } catch (error) {
+    console.error("Error in markAsWatched:", error);
     return res.status(500).json({ error: error.message || "Failed to update watch status" });
   }
 };
