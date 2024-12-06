@@ -4,7 +4,7 @@ import { User } from '../models/user.model.js';
 export const markAsWatched = async (req, res) => {
   try {
     // Extract movieId and watched status from the request body
-    const { movieId, watched, title } = req.body;
+    const { watched} = req.body;
 
     // Get the user ID from the authenticated user
     const userId = req.user?.id; // Assuming req.user is populated after token validation
