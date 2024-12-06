@@ -21,15 +21,21 @@ export interface HeroSectionProps {
   onStatusUpdate: (updatedWatchHistory) => void; // Function to update watch history in parent component
 }
 
-export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onStatusUpdate }: HeroSectionProps) => {
+export const HeroSection = ({
+  movie,
+  inWatchlist,
+  onWatchlistToggle,
+  userId,
+  onStatusUpdate,
+}: HeroSectionProps) => {
   const [isWatched, setIsWatched] = useState(false);
 
   // Function to toggle watched status
   const handleToggleWatched = async () => {
     try {
-      const updatedMovie = await markMovieAsWatched(movie.id, !isWatched);
-      setIsWatched(!isWatched); // Update the local state
-      onStatusUpdate(updatedMovie.watchHistory); // Pass updated history to parent
+      const updatedMovie = await markAsWatched(movie.id, movie.title, !isWatched,);
+      setIsWatched(!isWatched);
+      onStatusUpdate(updatedMovie.watchHistory);
     } catch (error) {
       console.error("Failed to update watched status:", error.message);
     }
@@ -38,32 +44,30 @@ export const HeroSection = ({ movie, inWatchlist, onWatchlistToggle, userId, onS
 
 
 
-
-  const markMovieAsWatched = async (movieId: string, watched: boolean) => {
+  const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
     try {
-      const token = localStorage.getItem("token"); // Retrieve user's token for authentication
       const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
-        method: "PUT",
-        credentials: "include",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ movieId, watched }),
+        credentials: 'include',
+        body: JSON.stringify({ movieId, movieTitle, watched }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to update movie status.");
+        throw new Error(data.message || 'Failed to mark as watched');
       }
 
-      const data = await response.json();
-      return data;
+      console.log('Watch status updated:', data);
+      return data; // Return the updated data
     } catch (error) {
-      console.error("Error updating movie status:", error.message);
-      throw error;
+      console.error('Error marking movie as watched:', error);
+      return null; // Ensure we return null or handle errors gracefully
     }
   };
-
 
   if (!movie) {
     return <p className="text-center text-neutral-200">No movie to display</p>;
