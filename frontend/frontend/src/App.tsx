@@ -40,7 +40,12 @@ const App = () => (
             <Route path="/watchhistory" element={<WatchHistoryPage />} />
             <Route path="/watchlist" element={<WatchlistPage />} />
             <Route path="/reminders" element={<RemindersPage />} />
-            <Route path="/movie/:id" element={<MovieDetails />} />
+
+            <Route path="/movie/:id" element={<MovieDetails inWatchlist={false} onWatchlistToggle={function (): void {
+              throw new Error("Function not implemented.");
+            }} userId={""} onStatusUpdate={function (updatedWatchHistory): void {
+              throw new Error("Function not implemented.");
+            }} />} />
 
 
 

@@ -44,71 +44,39 @@ const WatchlistPage: React.FC = () => {
     // Handle add/remove from watchlist
     ;
 
-    const handleWatchlistToggle = async (id: string, isInWatchlist: boolean) => {
-        console.log(`Toggling watchlist for Movie ID: ${id}. Is in Watchlist: ${isInWatchlist}`);
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-            console.error("No token found! Please log in.");
-            return;
-        }
-
-        const movieToToggle = watchlist.find((movie) => movie.id === id); // Find the movie details
-
-        if (!movieToToggle) {
-            console.error("Movie not found in current watchlist.");
-            return;
-        }
-
+    const handleWatchlistToggle = async (movieId: string, newStatus: boolean) => {
         try {
-            if (!isInWatchlist) {
-                // Add to watchlist
-                console.log("Sending request to add movie to watchlist:", movieToToggle);
+            const token = localStorage.getItem("token");
+            const url = newStatus
+                ? 'https://movielist-nl59.onrender.com/api/v1/watchlist/add'
+                : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove${movieId}`;
 
-                const addResponse = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({ userId: 'your-user-id', movie: movieToToggle }), // Make sure to pass userId correctly
-                    credentials: "include",
-                });
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ movieId }),
+            });
 
-                const addData = await addResponse.json();
-                console.log("Add response:", addData);
-
-                if (addData.message === "Movie added to watchlist") {
-                    setWatchlist([...watchlist, movieToToggle]); // Update the local watchlist UI
-                } else {
-                    console.error("Failed to add movie to watchlist:", addData.message);
-                }
-            } else {
-                // Remove from watchlist
-                console.log("Sending request to remove movie from watchlist:", id);
-
-                const removeResponse = await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
-                    },
-                    credentials: "include",
-                });
-
-                const removeData = await removeResponse.json();
-                console.log("Remove response:", removeData);
-
-                if (removeData.message === "Movie removed from watchlist") {
-                    setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Remove the movie from UI
-                } else {
-                    console.error("Failed to remove movie from watchlist:", removeData.message);
-                }
+            if (!response.ok) {
+                throw new Error("Failed to update watchlist");
             }
-        } catch (err) {
-            console.error("Error in toggling watchlist:", err);
+
+            const data = await response.json();
+            console.log("Watchlist updated:", data);
+
+            setWatchlist((prev) =>
+                newStatus
+                    ? [...prev, data.movie] // Add the Movie object returned from API
+                    : prev.filter((movie) => movie.id !== movieId) // Remove by matching `id`
+            );
+        } catch (error) {
+            console.error("Error updating watchlist:", error);
         }
     };
+
 
 
 
