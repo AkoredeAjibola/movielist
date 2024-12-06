@@ -3,13 +3,17 @@ import { User } from '../models/user.model.js';
 
 export const markAsWatched = async (req, res) => {
   try {
+    // Extract movieId and watched status from the request body
     const { movieId, watched, movieTitle } = req.body;
+
+    // Get the user ID from the authenticated user
     const userId = req.user?.id; // Assuming req.user is populated after token validation
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
     }
 
+    // Find the user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
