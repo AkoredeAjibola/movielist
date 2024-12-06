@@ -28,6 +28,8 @@ const WatchHistoryPage: React.FC = () => {
       });
       const data = await response.json();
 
+      console.log("Fetched data:", data);
+
       if (data.success) {
         setHistory(data.history); // Update the local state with the fetched history
         setStreaks(data.streaks || 0);
