@@ -7,6 +7,7 @@ import movieRoutes from "./routes/movie.route.js";
 import reminderRoutes from "./routes/reminder.route.js";
 import moodRoutes from "./routes/mood.route.js";
 import watchHistoryRoutes from './routes/watchHistory.route.js';
+import profileRoutes from './routes/watchHistory.route.js';
 import watchListRoutes from './routes/watchList.route.js';
 import tvRoutes from "./routes/tv.route.js";
 import searchRoutes from "./routes/search.route.js";
@@ -39,6 +40,8 @@ app.use("/api/v1/reminder", protectRoute, reminderRoutes);
 app.use("/api/v1/mood", protectRoute, moodRoutes);
 app.use('/api/v1/watch-history', watchHistoryRoutes);
 app.use('/api/v1/watchlist', watchListRoutes);
+app.use('/api/v1/profile', profileRoutes);
+
 
 
 if (ENV_VARS.NODE_ENV === "production") {

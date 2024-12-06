@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
+import { StreakTracker } from "@/components/WatchStreak";
 
 interface WatchHistoryItem {
   id: string;
@@ -12,6 +13,7 @@ interface WatchHistoryItem {
 const WatchHistoryPage: React.FC = () => {
   const [history, setHistory] = useState<WatchHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [streaks, setStreaks] = useState(0);
   const [error, setError] = useState("");
 
   // Function to fetch watch history
@@ -28,6 +30,7 @@ const WatchHistoryPage: React.FC = () => {
 
       if (data.success) {
         setHistory(data.history); // Update the local state with the fetched history
+        setStreaks(data.streaks || 0);
       } else {
         throw new Error(data.message || "Failed to fetch history.");
       }
@@ -72,6 +75,7 @@ const WatchHistoryPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container py-8">
+        <StreakTracker streaks={streaks} />
         <h1 className="text-3xl font-bold mb-6">Watch History</h1>
         {loading ? (
           <p className="text-center text-neutral-200">Loading watch history...</p>
