@@ -78,13 +78,12 @@ export async function getWatchHistory(req, res) {
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized: User not found" });
     }
-
-    const user = await User.findById(userId).select("watchHistory").sort({ "watchHistory.watchedAt": -1 });
+    const user = await User.findById(userId);
 
     if (!user || !user.watchHistory) {
       return res.status(404).json({ success: false, message: "No watch history found" });
     }
-    console.log("User streaks:", user.streaks);
+  
     res.status(200).json({ success: true, history: user.watchHistory,  streaks: user.streaks, });
   } catch (error) {
     console.error("Error fetching watch history:", error);
