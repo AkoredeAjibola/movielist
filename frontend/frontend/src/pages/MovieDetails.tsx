@@ -146,15 +146,18 @@ const MovieDetailsPage: React.FC = () => {
 
                     {/* Genres */}
                     <div className="mt-2 md:mt-0">
-                        {movieDetails.genre_ids.map((genreId) => (
-                            <span
-                                key={genreId}
-                                className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
-                            >
-                                {genreMap[genreId] || "Unknown Genre"} {/* Show the genre name */}
-                            </span>
-                        ))}
+                        {Array.isArray(movieDetails.genre_ids) && movieDetails.genre_ids.length > 0 ? (
+                            movieDetails.genre_ids.map((genreId) => (
+                                <span key={genreId} className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
+                                    {genreMap[genreId] || "Unknown Genre"}
+                                </span>
+                            ))
+                        ) : (
+                            <span>NA</span>
+                        )}
                     </div>
+
+
                 </div>
 
                 {/* Overview */}
