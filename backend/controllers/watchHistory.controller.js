@@ -57,7 +57,7 @@ export async function getWatchHistory(req, res) {
 }
 
 export async function deleteWatchHistory(req, res) {
-  const { movieId } = req.params; // Assuming movieId is passed as the parameter
+  const { movieId } = req.params; // Expecting movieId as a URL parameter
 
   try {
     const userId = req.user?.id;
@@ -66,27 +66,32 @@ export async function deleteWatchHistory(req, res) {
       return res.status(401).json({ success: false, message: "Unauthorized: User not found" });
     }
 
-    // Find the user and remove the movie from watchHistory
+    // Find the user
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found." });
     }
 
+    // Filter the movie out of the watchHistory
     const initialLength = user.watchHistory.length;
-
     user.watchHistory = user.watchHistory.filter((item) => item.movieId !== movieId);
 
+    // Check if a movie was removed
     if (user.watchHistory.length === initialLength) {
       return res.status(404).json({ success: false, message: "Movie not found in watch history." });
     }
 
+    // Save the updated user document
     await user.save();
 
-    res.status(200).json({ success: true, message: "Watch history item deleted successfully." });
+    res.status(200).json({
+      success: true,
+      message: "Watch history item deleted successfully.",
+      watchHistory: user.watchHistory, // Optionally return updated watchHistory
+    });
   } catch (error) {
     console.error("Error deleting watch history:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 }
-
