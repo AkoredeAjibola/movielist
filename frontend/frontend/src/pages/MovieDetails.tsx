@@ -41,6 +41,11 @@ const MovieDetailsPage: React.FC = ({
     const [loading, setLoading] = useState(true); // For loading state
 
     const handleToggleWatched = async () => {
+        if (!movie || !movie.id) {
+            console.error("Movie object is invalid or missing 'id'");
+            return;
+        }
+
         try {
             const updatedMovie = await markAsWatched(movie.id, movie.title, !isWatched);
             setIsWatched(!isWatched);
@@ -49,6 +54,7 @@ const MovieDetailsPage: React.FC = ({
             console.error("Failed to update watched status:", error.message);
         }
     };
+
 
     const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
         const token = localStorage.getItem("token");
