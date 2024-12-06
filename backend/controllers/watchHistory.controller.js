@@ -4,7 +4,7 @@ import { User } from '../models/user.model.js';
 export const markAsWatched = async (req, res) => {
   try {
     // Extract movieId and watched status from the request body
-    const { movieId, watched, movieTitle } = req.body;
+    const { movieId, watched, title } = req.body;
 
     // Get the user ID from the authenticated user
     const userId = req.user?.id; // Assuming req.user is populated after token validation
@@ -30,7 +30,7 @@ export const markAsWatched = async (req, res) => {
       return res.status(200).json({ message: "Watch status updated", watchHistory: user.watchHistory });
     } else {
       // Movie does not exist in the history, add it
-      user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
+      user.watchHistory.push({ movieId, title,  watched, watchedAt: new Date() });
       await user.save();
       return res.status(201).json({ message: "Movie added to watch history", watchHistory: user.watchHistory });
     }

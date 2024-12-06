@@ -120,8 +120,6 @@ const MovieDetailsPage: React.FC = () => {
     }
 
 
-    console.log("Movie Details:", movieDetails); // Check the full movie details object
-    console.log("Genre IDs:", movieDetails?.genres); // Check just genre_ids
 
 
     return (
