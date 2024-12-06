@@ -25,7 +25,7 @@ const userSchema = mongoose.Schema({
 	  watchHistory: [
 		{
 		  movieId: { type: String, required: true },
-		  movieTitle: { type: String},
+		  movieTitle: { type: String,  required: true },
 		  watched: { type: Boolean, default: false },
 		  watchedAt: { type: Date, default: Date.now },
 		},
