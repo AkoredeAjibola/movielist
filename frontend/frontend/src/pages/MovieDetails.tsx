@@ -13,6 +13,30 @@ const MovieDetailsPage: React.FC = () => {
     const [isInWatchlist, setIsInWatchlist] = useState(false);
     const [error, setError] = useState<string>("");
 
+
+    const genreMap: { [key: number]: string } = {
+        28: "Action",
+        12: "Adventure",
+        16: "Animation",
+        35: "Comedy",
+        80: "Crime",
+        99: "Documentary",
+        18: "Drama",
+        10751: "Family",
+        14: "Fantasy",
+        36: "History",
+        27: "Horror",
+        10402: "Music",
+        9648: "Mystery",
+        10749: "Romance",
+        878: "Science Fiction",
+        10770: "TV Movie",
+        53: "Thriller",
+        10752: "War",
+        37: "Western",
+        // Add more genres if necessary
+    };
+
     const fetchMovies = async (
         endpoint: string,
         setter: React.Dispatch<React.SetStateAction<Movie[]>>
@@ -91,16 +115,7 @@ const MovieDetailsPage: React.FC = () => {
         return <p>Loading movie details...</p>;
     }
 
-    const GENRE_MAPPING: { [key: number]: string } = {
-        16: "Animation",
-        14: "Fantasy",
-        28: "Action",
-        35: "Comedy",
-        878: "Science Fiction",
-        12: "Adventure",
-        10751: "Family",
-        // Add more mappings as needed
-    };
+
 
 
     return (
@@ -131,18 +146,15 @@ const MovieDetailsPage: React.FC = () => {
 
                     {/* Genres */}
                     <div className="mt-2 md:mt-0">
-                        <span className="text-lg font-medium text-gray-400">
-                            Genres:{" "}
-                            {movieDetails.genre_ids && movieDetails.genre_ids.length > 0 ? (
-                                movieDetails.genre_ids
-                                    .map((id) => GENRE_MAPPING[id] || "Unknown") // Map IDs to names
-                                    .join(", ")
-                            ) : (
-                                "N/A"
-                            )}
-                        </span>
+                        {movieDetails.genre_ids.map((genreId) => (
+                            <span
+                                key={genreId}
+                                className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
+                            >
+                                {genreMap[genreId] || "Unknown Genre"} {/* Show the genre name */}
+                            </span>
+                        ))}
                     </div>
-
                 </div>
 
                 {/* Overview */}
