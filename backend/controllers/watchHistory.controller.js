@@ -1,5 +1,7 @@
 import { User } from '../models/user.model.js';
 
+import { User } from '../models/user.model.js';
+
 export const markAsWatched = async (req, res) => {
   try {
     const { movieId, watched, movieTitle } = req.body;
@@ -15,16 +17,16 @@ export const markAsWatched = async (req, res) => {
     }
 
     // Check if the movie already exists in the user's watch history
-    const existingMovieIndex = user.watchHistory.findIndex((item) => item.movieId === movieId);
+    const existingMovie = user.watchHistory.find((item) => item.movieId === movieId);
 
-    if (existingMovieIndex !== -1) {
+    if (existingMovie) {
       // Movie exists, update the watched status
-      user.watchHistory[existingMovieIndex].watched = watched;
-      user.watchHistory[existingMovieIndex].watchedAt = new Date(); // Mark the time when watched status is updated
+      existingMovie.watched = watched;
+      existingMovie.watchedAt = new Date(); // Mark the time when watched status is updated
       await user.save();
       return res.status(200).json({ message: "Watch status updated", watchHistory: user.watchHistory });
     } else {
-      // Movie does not exist in the history, add it without repetition
+      // Movie does not exist in the history, add it
       user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
       await user.save();
       return res.status(201).json({ message: "Movie added to watch history", watchHistory: user.watchHistory });
@@ -33,6 +35,7 @@ export const markAsWatched = async (req, res) => {
     return res.status(500).json({ error: error.message || "Failed to update watch status" });
   }
 };
+
 
 
 export async function getWatchHistory(req, res) {
