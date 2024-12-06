@@ -1,5 +1,3 @@
-import { User } from '../models/user.model.js';
-
 export const markAsWatched = async (req, res) => {
   try {
     const { movieId, movieTitle, watched } = req.body;
@@ -34,7 +32,7 @@ export const markAsWatched = async (req, res) => {
         user.streaks += 1;
       } else if (diffDays > 1) {
         // Reset streak if more than a day has passed
-        user.streaks = 1;
+        user.streaks = 0;
       }
     } else {
       // First time marking a movie
@@ -54,12 +52,14 @@ export const markAsWatched = async (req, res) => {
       user.watchHistory.push({ movieId, movieTitle, watched, watchedAt: new Date() });
     }
 
+    // Save the user's data
     await user.save();
 
     return res.status(200).json({
       message: existingMovie ? "Watch status updated" : "Movie added to watch history",
       watchHistory: user.watchHistory,
       streaks: user.streaks,
+      lastWatchedDate: user.lastWatchedDate // Sending the updated last watched date along with streaks
     });
   } catch (error) {
     console.error("Error in markAsWatched:", error);
@@ -85,7 +85,7 @@ export async function getWatchHistory(req, res) {
       return res.status(404).json({ success: false, message: "No watch history found" });
     }
 
-    res.status(200).json({ success: true, history: user.watchHistory });
+    res.status(200).json({ success: true, history: user.watchHistory,  streaks: user.streaks });
   } catch (error) {
     console.error("Error fetching watch history:", error);
     res.status(500).json({ success: false, message: "Internal Server Error" });
