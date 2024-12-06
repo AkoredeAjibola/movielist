@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { StreakTracker } from "@/components/WatchStreak";
 
 const ProfilePage = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfile = async () => {
             const token = localStorage.getItem("token");
             if (!token) {
                 setError("You need to log in to access your profile.");
-                return;
+                return navigate("/login");
             }
 
             setLoading(true);
             try {
-                const response = await fetch("https://movielist-nl59.onrender.com/api/v1/profile", {
+                const response = await fetch("https://movielist-nl59.onrender.com/api/v1/profile/", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -42,13 +44,12 @@ const ProfilePage = () => {
         };
 
         fetchProfile();
-    }, []);
-
+    }, [navigate]);
 
     if (loading) return <p>Loading profile...</p>;
     if (error) return <p>Error: {error}</p>;
 
-    if (!profile) return <p>No profile data found.</p>; // Fallback if no profile data
+    if (!profile) return <p>No profile data found.</p>;
 
     return (
         <div className="container py-8">
@@ -60,7 +61,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Streak Tracker */}
-            {profile.streaks && profile.streaks > 0 ? (
+            {profile.streaks > 0 ? (
                 <StreakTracker streaks={profile.streaks} />
             ) : (
                 <p>No streaks recorded yet.</p>
@@ -70,7 +71,7 @@ const ProfilePage = () => {
             <div className="flex justify-between mt-4">
                 <div>
                     <p className="text-sm text-muted-foreground">Total Movies Watched</p>
-                    <p className="text-lg font-semibold">{profile.totalMoviesWatched}</p>
+                    <p className="text-lg font-semibold">{profile.totalMoviesWatched || 0}</p>
                 </div>
                 <div>
                     <p className="text-sm text-muted-foreground">Watchlist Count</p>
@@ -78,11 +79,10 @@ const ProfilePage = () => {
                         {profile.watchlistCount !== undefined ? profile.watchlistCount : "N/A"}
                     </p>
                 </div>
-
             </div>
 
             {/* Preferences */}
-            {profile.preferences && profile.preferences.length > 0 ? (
+            {profile.preferences.length > 0 ? (
                 <div className="mt-6">
                     <h3 className="text-lg font-semibold">Your Preferences</h3>
                     <ul className="flex flex-wrap gap-2">
