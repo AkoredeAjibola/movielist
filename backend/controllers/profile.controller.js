@@ -24,13 +24,13 @@ export const getProfile = async (req, res) => {
       return res.status(200).json({
         success: true,
         profile: {
-          username: user.username || "",
-          email: user.email || "",
-          preferences: user.preferences || [],
-          streaks: user.streaks || 0,
-          totalMoviesWatched,
-          watchlistCount,
-          lastWatchedDate: user.lastWatchedDate || null,
+          username: user?.username || "",
+          email: user?.email || "",
+          preferences: user?.preferences || [],
+          streaks: user?.streaks || 0,
+          totalMoviesWatched: user?.watchHistory?.length || 0,
+          watchlistCount: user?.watchlist?.length || 0,
+          lastWatchedDate: user?.lastWatchedDate || null,
         },
       });
     } catch (error) {
