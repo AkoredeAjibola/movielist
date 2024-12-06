@@ -84,7 +84,7 @@ export async function getWatchHistory(req, res) {
     if (!user || !user.watchHistory) {
       return res.status(404).json({ success: false, message: "No watch history found" });
     }
-
+    console.log("User streaks:", user.streaks);
     res.status(200).json({ success: true, history: user.watchHistory,  streaks: user.streaks, });
   } catch (error) {
     console.error("Error fetching watch history:", error);
