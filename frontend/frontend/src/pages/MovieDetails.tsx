@@ -18,36 +18,39 @@ export interface Movie {
 }
 
 export interface MovieDetailsProps {
-    movie: Movie;
+    movie?: Movie; // Make movie optional in case it's being fetched asynchronously
     inWatchlist: boolean;
     onWatchlistToggle: () => void;
-    userId: string; // Assuming the userId is passed from parent
-    onStatusUpdate: (updatedWatchHistory) => void; // Function to update watch history in parent component
+    userId: string;
+    onStatusUpdate: (updatedWatchHistory) => void;
 }
 
-const MovieDetailsPage: React.FC = ({
+const MovieDetailsPage: React.FC<MovieDetailsProps> = ({
     movie,
     inWatchlist,
     onWatchlistToggle,
     userId,
     onStatusUpdate,
-}: MovieDetailsProps) => {
+}) => {
     const { id } = useParams<{ id: string }>();
     const [movieDetails, setMovieDetails] = useState<Movie | null>(null);
     const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
     const [isInWatchlist, setIsInWatchlist] = useState(inWatchlist);
     const [error, setError] = useState<string>("");
     const [isWatched, setIsWatched] = useState(false);
-    const [loading, setLoading] = useState(true); // For loading state
+    const [loading, setLoading] = useState(true);
+
+    // If the movie prop is passed, use it directly
+    const movieToUse = movie || movieDetails; // Prioritize movie from props
 
     const handleToggleWatched = async () => {
-        if (!movie || !movie.id) {
+        if (!movieToUse || !movieToUse.id) {
             console.error("Movie object is invalid or missing 'id'");
             return;
         }
 
         try {
-            const updatedMovie = await markAsWatched(movie.id, movie.title, !isWatched);
+            const updatedMovie = await markAsWatched(movieToUse.id, movieToUse.title, !isWatched);
             setIsWatched(!isWatched);
             onStatusUpdate(updatedMovie.watchHistory);
         } catch (error) {
@@ -55,14 +58,13 @@ const MovieDetailsPage: React.FC = ({
         }
     };
 
-
     const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("User is not authenticated");
 
         try {
             const url = watched
-                ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched' // Mark as watched endpoint
+                ? 'https://movielist-nl59.onrender.com/api/v1/watch-history/watched'
                 : `https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}`;
 
             const method = watched ? 'PUT' : 'DELETE';
@@ -84,7 +86,7 @@ const MovieDetailsPage: React.FC = ({
                 throw new Error(data.message || 'Failed to mark as watched');
             }
 
-            return data; // Return the updated data
+            return data;
         } catch (error) {
             console.error('Error marking movie as watched:', error);
             throw error;
