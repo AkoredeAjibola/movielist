@@ -45,7 +45,7 @@ const WatchlistPage: React.FC = () => {
     ;
 
     const handleWatchlistToggle = async (id: string, isInWatchlist: boolean) => {
-        console.log(`Toggling watchlist for Movie ID: ${id}. Is in Watchlist: ${isInWatchlist}`); // Debugging log
+        console.log(`Toggling watchlist for Movie ID: ${id}. Is in Watchlist: ${isInWatchlist}`);
 
         const token = localStorage.getItem("token");
         if (!token) {
@@ -53,11 +53,17 @@ const WatchlistPage: React.FC = () => {
             return;
         }
 
+        const movieToToggle = watchlist.find((movie) => movie.id === id); // Find the movie details
+
+        if (!movieToToggle) {
+            console.error("Movie not found in current watchlist.");
+            return;
+        }
+
         try {
             if (!isInWatchlist) {
-                // Add to watchlist first
-                const movieToAdd = { id, title: "Movie Title", poster_path: "/path/to/image" }; // Make sure to replace with correct movie details
-                console.log("Sending request to add movie to watchlist:", movieToAdd); // Debugging log
+                // Add to watchlist
+                console.log("Sending request to add movie to watchlist:", movieToToggle);
 
                 const addResponse = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/add", {
                     method: "POST",
@@ -65,22 +71,21 @@ const WatchlistPage: React.FC = () => {
                         "Content-Type": "application/json",
                         "Authorization": `Bearer ${token}`,
                     },
-                    body: JSON.stringify(movieToAdd),
+                    body: JSON.stringify({ userId: 'your-user-id', movie: movieToToggle }), // Make sure to pass userId correctly
                     credentials: "include",
                 });
 
                 const addData = await addResponse.json();
-                console.log("Add response:", addData); // Log the response from add request
+                console.log("Add response:", addData);
 
-                if (addData.success) {
-                    // Update the watchlist in UI after successful add
-                    setWatchlist([...watchlist, movieToAdd]);
+                if (addData.message === "Movie added to watchlist") {
+                    setWatchlist([...watchlist, movieToToggle]); // Update the local watchlist UI
                 } else {
                     console.error("Failed to add movie to watchlist:", addData.message);
                 }
             } else {
-                // If it's in the watchlist, remove it
-                console.log("Sending request to remove movie from watchlist:", id); // Debugging log
+                // Remove from watchlist
+                console.log("Sending request to remove movie from watchlist:", id);
 
                 const removeResponse = await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`, {
                     method: "DELETE",
@@ -92,11 +97,10 @@ const WatchlistPage: React.FC = () => {
                 });
 
                 const removeData = await removeResponse.json();
-                console.log("Remove response:", removeData); // Log the response from remove request
+                console.log("Remove response:", removeData);
 
-                if (removeData.success) {
-                    // Remove from the watchlist in UI after successful removal
-                    setWatchlist(watchlist.filter((movie) => movie.id !== id));
+                if (removeData.message === "Movie removed from watchlist") {
+                    setWatchlist(watchlist.filter((movie) => movie.id !== id)); // Remove the movie from UI
                 } else {
                     console.error("Failed to remove movie from watchlist:", removeData.message);
                 }
@@ -105,7 +109,6 @@ const WatchlistPage: React.FC = () => {
             console.error("Error in toggling watchlist:", err);
         }
     };
-
 
 
 
@@ -124,7 +127,7 @@ const WatchlistPage: React.FC = () => {
                                 id={movie.id}
                                 title={movie.title}
                                 poster_path={movie.poster_path}
-                                inWatchlist={true} // Already in the watchlist
+                                inWatchlist={watchlist.some((item) => item.id === movie.id)}
                                 onWatchlistToggle={handleWatchlistToggle} // Pass the function to toggle watchlist
                             />
                         ))}
