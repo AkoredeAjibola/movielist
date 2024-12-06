@@ -74,7 +74,7 @@ const WatchHistoryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="container py-8">
+      <main className="container py-8 mt-20">
         <div>
           <StreakTracker streaks={streaks} />
         </div>
