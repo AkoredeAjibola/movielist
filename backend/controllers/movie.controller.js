@@ -50,6 +50,22 @@ export async function getPopularMovie(req, res) {
 	}
   }
 
+  export async function getUpcomingMovie(req, res) {
+	try {
+	  const data = await fetchFromTMDB('https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=2');
+	  
+	  if (!data || data.length === 0) {
+		return res.status(404).json({ success: false, message: "No popular movies found" });
+	  }
+  
+	  res.json({ success: true, content: data });
+	} catch (error) {
+	  console.error("Error in fetching popular movies:", error);
+	  res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
+	}
+  }
+
+
 
 
 

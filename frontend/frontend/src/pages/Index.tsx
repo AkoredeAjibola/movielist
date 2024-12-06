@@ -72,6 +72,7 @@ const Index: React.FC = () => {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null); // Featured movie
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]); // Trending movies
   const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]); // Trending movies
+  const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]); // Trending movies
   const [searchResults, setSearchResults] = useState<Movie[]>([]); // Search results
   const [view, setView] = useState<"default" | "search">("default");
   const [loading, setLoading] = useState<boolean>(false);
@@ -180,6 +181,7 @@ const Index: React.FC = () => {
         fetchFeaturedMovie(),
         fetchMovies("api/v1/movie/popular", setTrendingMovies), // Fetch trending movies
         fetchMovies("api/v1/movie/top-rated", setTopRatedMovies), // Fetch trending movies
+        fetchMovies("api/v1/movie/upcoming", setUpcomingMovies), // Fetch trending movies
       ]).finally(() => setLoading(false));
     }
   }, [view]);
@@ -242,6 +244,33 @@ const Index: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {Array.isArray(topRatedMovies) && topRatedMovies.length > 0 ? (
                 topRatedMovies.map((movie) => (
+                  <MovieCard
+                    key={movie.id}
+                    id={movie.id}
+                    title={movie.title}
+                    poster_path={movie.poster_path}
+                    inWatchlist={false}
+                    onWatchlistToggle={() => { }}
+                  />
+                ))
+
+              ) : (
+                <p>No top-rated movies available</p>  // Fallback message if the data is not an array or empty
+              )}
+            </div>
+          )}
+        </section>
+
+
+        <section className="container py-8">
+          <h2 className="text-2xl font-semibold mb-4">Upcoming Movies</h2>
+          {loading ? (
+            <p className="text-center text-neutral-200">Loading upcoming movies...</p>
+          ) : (
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {Array.isArray(upcomingMovies) && upcomingMovies.length > 0 ? (
+                upcomingMovies.map((movie) => (
                   <MovieCard
                     key={movie.id}
                     id={movie.id}
