@@ -21,6 +21,29 @@ export interface HeroSectionProps {
   onStatusUpdate: (updatedWatchHistory) => void; // Function to update watch history in parent component
 }
 
+const genreMap: { [key: number]: string } = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Science Fiction",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
+  // Add more genres if necessary
+};
+
 export const HeroSection = ({
   movie,
   inWatchlist,
@@ -91,12 +114,12 @@ export const HeroSection = ({
         <div className="max-w-2xl space-y-4">
           <h1 className="text-4xl font-bold tracking-tight lg:text-5xl">{movie.title}</h1>
           <div className="flex flex-wrap gap-2">
-            {movie.genre_ids.map((genre) => (
+            {movie.genre_ids.map((genreId) => (
               <span
-                key={genre}
+                key={genreId}
                 className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
               >
-                {genre}
+                {genreMap[genreId] || "Unknown Genre"} {/* Show the genre name */}
               </span>
             ))}
           </div>
@@ -114,9 +137,6 @@ export const HeroSection = ({
           </div>
         </div>
       </div>
-
-
-
     </div>
   );
 };
