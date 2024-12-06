@@ -4,7 +4,7 @@ import { User } from '../models/user.model.js';
 export const markAsWatched = async (req, res) => {
   try {
     // Extract movieId, watched status, and title from the request body
-    const {movieId, watched, movieTitle } = req.body;
+    const {movieId,  movieTitle, watched } = req.body;
 
     // Log the request body for debugging
     console.log("Request Body:", req.body);
