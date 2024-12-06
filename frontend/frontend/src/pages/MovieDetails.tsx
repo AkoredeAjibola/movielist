@@ -148,11 +148,11 @@ const MovieDetailsPage: React.FC = () => {
                     <div className="mt-2 md:mt-0">
                         <span className="text-lg font-medium text-gray-400">
                             Genres:{" "}
-                            {movieDetails.genre_ids.length > 0
+                            {movieDetails?.genre_ids?.length > 0 // Safe check for genre_ids
                                 ? movieDetails.genre_ids
-                                    .map((id) => genreMap[id] || "Unknown Genre") // Fallback to "Unknown Genre" if not found
+                                    .map((id) => genreMap[id] || "Unknown Genre") // Map IDs to names
                                     .join(", ")
-                                : "N/A"}
+                                : "N/A"} {/* Fallback for no genres */}
                         </span>
                     </div>
 
