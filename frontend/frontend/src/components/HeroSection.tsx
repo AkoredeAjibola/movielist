@@ -47,7 +47,7 @@ export const HeroSection = ({
   const markAsWatched = async (movieId: string, movieTitle: string, watched: boolean) => {
     try {
       const response = await fetch('https://movielist-nl59.onrender.com/api/v1/watch-history/watched', {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
