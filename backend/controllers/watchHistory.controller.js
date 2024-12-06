@@ -4,13 +4,13 @@ import { User } from '../models/user.model.js';
 export const markAsWatched = async (req, res) => {
   try {
     // Extract movieId, watched status, and title from the request body
-    const { id, watched, title } = req.body;
+    const {movieId, watched, title } = req.body;
 
     // Log the request body for debugging
     console.log("Request Body:", req.body);
 
     // Validate required fields
-    if (!id || !title || watched === undefined) {
+    if (!movieId || !title || watched === undefined) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
