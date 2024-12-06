@@ -80,7 +80,6 @@
 //     </Card>
 //   );
 // };
-
 import { useState } from "react";
 import { Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -113,13 +112,47 @@ export const MovieCard = ({
     navigate(`/movie/${id}`); // Navigate to the movie details page
   };
 
-  const handleWatchlistToggle = (event: React.MouseEvent) => {
+  const handleWatchlistToggle = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent click from navigating
-    console.log("Button clicked"); // Debugging log
-    setIsInWatchlist(!isInWatchlist); // Update local UI state
-    onWatchlistToggle(id, !isInWatchlist); // Call parent function
+    console.log("Button clicked");
+    try {
+      const newStatus = !isInWatchlist; // Determine the new status
+      await addToWatchlist(id, newStatus); // Call API to update watchlist
+      setIsInWatchlist(newStatus); // Update local UI state
+      onWatchlistToggle(id, newStatus); // Call parent function to sync state
+    } catch (error) {
+      console.error("Error toggling watchlist:", error);
+    }
   };
 
+  const addToWatchlist = async (movieId: string, newStatus: boolean) => {
+    try {
+      const token = localStorage.getItem("token");
+      const url = newStatus
+        ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
+        : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: "USER_ID", movieId }), // Replace with actual userId logic
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update watchlist");
+      }
+
+      const data = await response.json();
+      console.log("Watchlist updated:", data);
+      return data; // Return data for any additional processing
+    } catch (error) {
+      console.error("Error updating watchlist:", error);
+      throw error;
+    }
+  };
 
   return (
     <Card className="group relative overflow-hidden transition-all hover:scale-105">
@@ -145,7 +178,7 @@ export const MovieCard = ({
           size="icon"
           variant="secondary"
           className="h-8 w-8"
-          onClick={handleWatchlistToggle}  // Toggle watchlist state on click
+          onClick={handleWatchlistToggle} // Toggle watchlist state on click
         >
           <Bookmark className={isInWatchlist ? "fill-current" : ""} />
           <span className="sr-only">
