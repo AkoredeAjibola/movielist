@@ -71,6 +71,7 @@ const BASE_URL = "https://movielist-nl59.onrender.com"
 const Index: React.FC = () => {
   const [featuredMovie, setFeaturedMovie] = useState<Movie | null>(null); // Featured movie
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]); // Trending movies
+  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]); // Trending movies
   const [searchResults, setSearchResults] = useState<Movie[]>([]); // Search results
   const [view, setView] = useState<"default" | "search">("default");
   const [loading, setLoading] = useState<boolean>(false);
@@ -138,7 +139,8 @@ const Index: React.FC = () => {
             backdropPath: movie.backdrop_path, // Correctly map the property name
             poster_path: movie.poster_path, // Correctly map the property name
             genre_ids: movie.genre_ids, // You can update this if you have genre data or handle it differently
-            release_date: movie.release_date
+            release_date: movie.release_date,
+            genres: movie.genres
           });
         } else {
           throw new Error("Movie data is missing required properties.");
@@ -177,6 +179,7 @@ const Index: React.FC = () => {
       Promise.all([
         fetchFeaturedMovie(),
         fetchMovies("api/v1/movie/popular", setTrendingMovies), // Fetch trending movies
+        fetchMovies("api/v1/movie/top-rated", setTopRatedMovies), // Fetch trending movies
       ]).finally(() => setLoading(false));
     }
   }, [view]);
@@ -196,17 +199,18 @@ const Index: React.FC = () => {
           <HeroSection
             movie={featuredMovie}
             inWatchlist={inWatchlist}
-            onWatchlistToggle={() => setInWatchlist(!inWatchlist)}
-          />
+            onWatchlistToggle={() => setInWatchlist(!inWatchlist)} userId={""} onStatusUpdate={function (updatedWatchHistory): void {
+              throw new Error("Function not implemented.");
+            }} />
         ) : (
           <p className="text-center text-neutral-200">Loading featured movie...</p>
         )}
 
         {/* Trending Section */}
         <section className="container py-8">
-          <h2 className="text-2xl font-semibold mb-4">Trending Now</h2>
+          <h2 className="text-2xl font-semibold mb-4">Popular Now</h2>
           {loading ? (
-            <p className="text-center text-neutral-200">Loading trending movies...</p>
+            <p className="text-center text-neutral-200">Loading popular movies...</p>
           ) : (
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -228,6 +232,34 @@ const Index: React.FC = () => {
             </div>
           )}
         </section>
+
+        <section className="container py-8">
+          <h2 className="text-2xl font-semibold mb-4">Top-Rated Now</h2>
+          {loading ? (
+            <p className="text-center text-neutral-200">Loading top-rated movies...</p>
+          ) : (
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {Array.isArray(topRatedMovies) && topRatedMovies.length > 0 ? (
+                topRatedMovies.map((movie) => (
+                  <MovieCard
+                    key={movie.id}
+                    id={movie.id}
+                    title={movie.title}
+                    poster_path={movie.poster_path}
+                    inWatchlist={false}
+                    onWatchlistToggle={() => { }}
+                  />
+                ))
+
+              ) : (
+                <p>No trending movies available</p>  // Fallback message if the data is not an array or empty
+              )}
+            </div>
+          )}
+        </section>
+
+
       </main>
     </div>
   );

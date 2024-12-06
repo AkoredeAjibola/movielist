@@ -115,6 +115,7 @@ export const MovieCard = ({
   const handleWatchlistToggle = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent click from navigating
     console.log("Button clicked");
+
     try {
       const newStatus = !isInWatchlist; // Determine the new status
       await addToWatchlist(id, newStatus); // Call API to update watchlist
@@ -124,6 +125,7 @@ export const MovieCard = ({
       console.error("Error toggling watchlist:", error);
     }
   };
+
 
   const addToWatchlist = async (movieId: string, newStatus: boolean) => {
     try {
