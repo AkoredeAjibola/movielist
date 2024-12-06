@@ -1,42 +1,48 @@
-import { User } from "../models/user.model.js";
+import { User } from "../models/User";
 
-// Profile endpoint to get user information
-export const getProfile = async (req, res) => {
+// Controller to get user profile
+export const getUserProfile = async (req, res) => {
   try {
-    const userId = req.user?.id; // Extract user ID from token (ensure it's coming from middleware)
-
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized: User not found" });
-    }
-
-    // Fetch user data from the database
-    const user = await User.findById(userId)
-      .select("username email preferences streaks watchHistory watchlist lastWatchedDate")
-      .lean();
-
+    const user = await User.findById(req.user.id); // Assuming JWT token attaches user id to request
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
-
-    // Compute additional stats if necessary
-    const totalMoviesWatched = user.watchHistory?.length || 0;
-    const watchlistCount = user.watchlist?.length || 0;
-
-    // Return profile data
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       profile: {
-        username: user.username || "",
-        email: user.email || "",
-        preferences: user.preferences || [],
-        streaks: user.streaks || 0,
-        totalMoviesWatched,
-        watchlistCount,
-        lastWatchedDate: user.lastWatchedDate || null,
+        username: user.username,
+        email: user.email,
+        preferences: user.preferences,
+        streaks: user.streaks,
+        lastWatchedDate: user.lastWatchedDate,
+        watchHistory: user.watchHistory,
+        watchlist: user.watchlist,
       },
     });
   } catch (error) {
-    console.error("Error fetching profile:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ message: "Error fetching profile" });
+  }
+};
+
+// Controller to update user profile
+export const updateUserProfile = async (req, res) => {
+  const { username, email, preferences } = req.body;
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Only allow updates to username, email, and preferences for simplicity
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.preferences = preferences || user.preferences;
+
+    await user.save();
+    res.status(200).json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Error updating profile" });
   }
 };
