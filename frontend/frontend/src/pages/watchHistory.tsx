@@ -39,17 +39,25 @@ const WatchHistoryPage: React.FC = () => {
   };
 
   // Function to delete a history item
-  const deleteHistoryItem = async (id: string) => {
+  const deleteHistoryItem = async (movieId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await fetch(`https://movielist-nl59.onrender.com/api/v1/watch-history/${id}`, {
+      const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/watch-history/${movieId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
       });
-      setHistory((prevHistory) => prevHistory.filter((item) => item.id !== id)); // Remove item from state after deletion
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete history item.");
+      }
+
+      // Remove item from local state after successful deletion
+      setHistory((prevHistory) => prevHistory.filter((item) => item.movieId !== movieId));
     } catch (err) {
       console.error("Failed to delete history item:", err);
     }
@@ -84,7 +92,7 @@ const WatchHistoryPage: React.FC = () => {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => deleteHistoryItem(item.id)}
+                  onClick={() => deleteHistoryItem(item.movieId)}
                   className="text-red-500"
                 >
                   Remove
