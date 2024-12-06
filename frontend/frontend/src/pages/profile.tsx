@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { StreakTracker } from "@/components/WatchStreak";
 
 const ProfilePage = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token"); // Get token from local storage
             if (!token) {
                 setError("You need to log in to access your profile.");
-                return navigate("/login");
+                return;
             }
 
             setLoading(true);
@@ -24,27 +22,26 @@ const ProfilePage = () => {
                     },
                 });
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch profile data.");
-                }
+                const data = await response.json(); // Parse response to JSON
 
-                const data = await response.json();
-                if (data.success) {
+                if (response.ok) {
+                    // If the response is successful, store profile data
                     setProfile(data.profile);
-                    console.log("Fetched Profile Data:", data.profile);
+                    console.log("Fetched Profile Data:", data.profile); // Log profile data to debug
                 } else {
-                    throw new Error(data.message || "An error occurred.");
+                    // If the response fails, show the error message
+                    setError(data.message || "Failed to fetch profile.");
                 }
             } catch (err) {
                 setError(err.message || "Something went wrong.");
-                console.error(err);
+                console.error("Error fetching profile:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProfile();
-    }, [navigate]);
+        fetchProfile(); // Call the function when the component mounts
+    }, []);
 
     if (loading) return <p>Loading profile...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -61,7 +58,7 @@ const ProfilePage = () => {
             </div>
 
             {/* Streak Tracker */}
-            {profile.streaks > 0 ? (
+            {profile.streaks && profile.streaks > 0 ? (
                 <StreakTracker streaks={profile.streaks} />
             ) : (
                 <p>No streaks recorded yet.</p>
@@ -71,7 +68,7 @@ const ProfilePage = () => {
             <div className="flex justify-between mt-4">
                 <div>
                     <p className="text-sm text-muted-foreground">Total Movies Watched</p>
-                    <p className="text-lg font-semibold">{profile.totalMoviesWatched || 0}</p>
+                    <p className="text-lg font-semibold">{profile.totalMoviesWatched}</p>
                 </div>
                 <div>
                     <p className="text-sm text-muted-foreground">Watchlist Count</p>
@@ -82,15 +79,12 @@ const ProfilePage = () => {
             </div>
 
             {/* Preferences */}
-            {profile.preferences.length > 0 ? (
+            {profile.preferences && profile.preferences.length > 0 ? (
                 <div className="mt-6">
                     <h3 className="text-lg font-semibold">Your Preferences</h3>
                     <ul className="flex flex-wrap gap-2">
                         {profile.preferences.map((genre, idx) => (
-                            <li
-                                key={idx}
-                                className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary"
-                            >
+                            <li key={idx} className="rounded-full bg-primary/10 px-3 py-1 text-sm text-primary">
                                 {genre}
                             </li>
                         ))}
