@@ -75,7 +75,9 @@ const WatchHistoryPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="container py-8">
-        <StreakTracker streaks={streaks} />
+        <div>
+          <StreakTracker streaks={streaks} />
+        </div>
         <h1 className="text-3xl font-bold mb-6">Watch History</h1>
         {loading ? (
           <p className="text-center text-neutral-200">Loading watch history...</p>
