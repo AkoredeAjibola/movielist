@@ -35,44 +35,48 @@ export const addToWatchlist =  async (req, res) => {
 
 // Remove movie from watchlist
 export const removeFromWatchlist = async (req, res) => {
-  const { userId } = req.body;
-  const { movieId } = req.params;
-
   try {
-    if (!userId || !movieId) {
-      return res.status(400).json({ message: "User ID and Movie ID are required." });
+    const { userId } = req.body; // Get the userId from the body
+    const { id } = req.params; // Get the movieId from the URL parameter
+
+    if (!userId || !id) {
+      return res.status(400).json({ message: "Missing required fields." });
     }
 
     const user = await User.findById(userId);
-
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Filter the movie out of the watchlist
-    user.watchlist = user.watchlist.filter((movie) => movie.id !== movieId);
-    await user.save();
+    // Remove movie from the watchlist
+    user.watchlist = user.watchlist.filter((movie) => movie.id !== id);
 
+    await user.save();
     res.status(200).json({ message: "Movie removed from watchlist.", watchlist: user.watchlist });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to remove movie from watchlist." });
+    console.error("Error removing from watchlist:", error);
+    res.status(500).json({ error: "Failed to remove movie from watchlist." });
   }
 };
 
 // Get user's watchlist
+// Get Watchlist controller
 export const getWatchlist = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId } = req.params; // Get userId from the URL params
 
+    // Find user by ID
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Return the user's watchlist
     res.status(200).json({ watchlist: user.watchlist });
   } catch (error) {
+    console.error("Error fetching watchlist:", error);
     res.status(500).json({ error: "Failed to fetch watchlist" });
   }
 };
+
 
