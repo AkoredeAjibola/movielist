@@ -113,8 +113,12 @@ export const MovieCard = ({
 
   const handleWatchlistToggle = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent click from navigating
+    const newStatus = !isInWatchlist; // Calculate new state
+
+    // Optimistic UI update
+    setIsInWatchlist(newStatus);
+
     try {
-      const newStatus = !isInWatchlist; // Toggle status
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId"); // Example logic for user ID
 
@@ -122,7 +126,8 @@ export const MovieCard = ({
         ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
         : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`;
 
-      const method = newStatus ? "POST" : "DELETE"
+      const method = newStatus ? "POST" : "DELETE";
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -137,11 +142,15 @@ export const MovieCard = ({
       }
 
       const data = await response.json();
-      setIsInWatchlist(newStatus);
-      onWatchlistToggle(id, newStatus);
       console.log("Watchlist updated:", data);
+
+      // Notify parent about the change
+      onWatchlistToggle(id, newStatus);
     } catch (error) {
       console.error("Error toggling watchlist:", error);
+
+      // Rollback UI state on error
+      setIsInWatchlist(!newStatus);
       alert("Failed to update watchlist. Please try again.");
     }
   };
