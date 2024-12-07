@@ -85,9 +85,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await response.json();
       console.log("Login response:", data);
 
+      const userId = data.user?._id;
+
       // Save token in localStorage (if needed for frontend use)
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("userId", userId);
       console.log("Token saved successfully");
       // Update frontend state
       setUser(data.user);
