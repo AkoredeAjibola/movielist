@@ -105,7 +105,6 @@ export const MovieCard = ({
   const [showReminder, setShowReminder] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(inWatchlist);
   const navigate = useNavigate();
-
   const imageUrl = `https://image.tmdb.org/t/p/w154${poster_path}`;
 
   const handleMovieClick = () => {
@@ -114,33 +113,23 @@ export const MovieCard = ({
 
   const handleWatchlistToggle = async (event: React.MouseEvent) => {
     event.stopPropagation(); // Prevent click from navigating
-    console.log("Button clicked");
-
     try {
-      const newStatus = !isInWatchlist; // Determine the new status
-      await addToWatchlist(id, newStatus); // Call API to update watchlist
-      setIsInWatchlist(newStatus); // Update local UI state
-      onWatchlistToggle(id, newStatus); // Call parent function to sync state
-    } catch (error) {
-      console.error("Error toggling watchlist:", error);
-    }
-  };
-
-
-  const addToWatchlist = async (movieId: string, newStatus: boolean) => {
-    try {
+      const newStatus = !isInWatchlist; // Toggle status
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId"); // Example logic for user ID
+
       const url = newStatus
         ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
         : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`;
 
+      const method = newStatus ? "PUT" : "DELETE"
       const response = await fetch(url, {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId: "USER_ID", movieId }), // Replace with actual userId logic
+        body: JSON.stringify({ userId, movieId: id }),
       });
 
       if (!response.ok) {
@@ -148,11 +137,12 @@ export const MovieCard = ({
       }
 
       const data = await response.json();
+      setIsInWatchlist(newStatus);
+      onWatchlistToggle(id, newStatus);
       console.log("Watchlist updated:", data);
-      return data; // Return data for any additional processing
     } catch (error) {
-      console.error("Error updating watchlist:", error);
-      throw error;
+      console.error("Error toggling watchlist:", error);
+      alert("Failed to update watchlist. Please try again.");
     }
   };
 
@@ -180,7 +170,7 @@ export const MovieCard = ({
           size="icon"
           variant="secondary"
           className="h-8 w-8"
-          onClick={handleWatchlistToggle} // Toggle watchlist state on click
+          onClick={handleWatchlistToggle}
         >
           <Bookmark className={isInWatchlist ? "fill-current" : ""} />
           <span className="sr-only">
