@@ -1,40 +1,34 @@
 import { User } from "../models/user.model.js";
 
 // Add movie to watchlist
-// Add movie to watchlist controller
-export const addToWatchlist = async (req, res) => {
-  try {
-    const { userId } = req.params; // Get userId from the URL params
-    const { movieId, title, poster_path } = req.body; // Get movie details from the request body
+export const addToWatchlist =  async (req, res) => {
+  const { userId, movieId, title, poster_path } = req.body;
 
-    // Find user by ID
+  try {
+    if (!userId || !movieId || !title) {
+      return res.status(400).json({ message: "Missing required fields." });
+    }
+
     const user = await User.findById(userId);
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found." });
     }
 
     // Check if the movie already exists in the watchlist
-    const movieExists = user.watchlist.some(movie => movie.id === movieId);
-
+    const movieExists = user.watchlist.some((movie) => movie.id === movieId);
     if (movieExists) {
-      return res.status(400).json({ message: "Movie is already in your watchlist" });
+      return res.status(400).json({ message: "Movie already in watchlist." });
     }
 
-    // Add movie to watchlist
-    user.watchlist.push({
-      id: movieId,
-      title,
-      poster_path,
-      watched: false, // default value for new movies
-    });
-
-    // Save the updated user object
+    // Add movie to the watchlist
+    user.watchlist.push({ id: movieId, title, poster_path });
     await user.save();
 
-    res.status(200).json({ message: "Movie added to watchlist", watchlist: user.watchlist });
+    res.status(200).json({ message: "Movie added to watchlist.", watchlist: user.watchlist });
   } catch (error) {
-    console.error("Error adding movie to watchlist:", error);
-    res.status(500).json({ error: "Failed to add movie to watchlist" });
+    console.error(error);
+    res.status(500).json({ message: "Failed to add movie to watchlist." });
   }
 };
 
