@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MovieCard } from "@/components/MovieCard";  // Import MovieCard component
+import { MovieCard } from "@/components/MovieCard"; // Import MovieCard component
 import { Navigation } from "@/components/Navigation";
 
 interface Movie {
@@ -15,20 +15,25 @@ const WatchlistPage: React.FC = () => {
     // Fetch the watchlist from the backend
     const fetchWatchlist = async () => {
         const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId"); // Assuming you store the userId in localStorage
+
+        if (!userId) {
+            console.error("User not logged in");
+            return;
+        }
+
         setLoading(true);
         try {
-            const response = await fetch("https://movielist-nl59.onrender.com/api/v1/watchlist/", {
+            const response = await fetch(`https://movielist-nl59.onrender.com/api/v1/watchlist/${userId}`, {
                 method: "GET",
-                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    Authorization: `Bearer ${token}`,
                 },
             });
             const data = await response.json();
             if (data.success) {
-                setWatchlist(data.content);
+                setWatchlist(data.content); // Assuming `data.content` holds the watchlist data
             }
         } catch (error) {
             console.error("Failed to fetch watchlist:", error);
@@ -42,22 +47,29 @@ const WatchlistPage: React.FC = () => {
     }, []);
 
     // Handle add/remove from watchlist
-    ;
-
     const handleWatchlistToggle = async (movieId: string, newStatus: boolean) => {
         try {
             const token = localStorage.getItem("token");
+            const userId = localStorage.getItem("userId"); // Get userId
+
+            if (!userId) {
+                console.error("User not logged in");
+                return;
+            }
+
             const url = newStatus
-                ? 'https://movielist-nl59.onrender.com/api/v1/watchlist/add'
-                : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove${movieId}`;
+                ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
+                : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${movieId}`;
+
+            const method = newStatus ? "POST" : "DELETE";
 
             const response = await fetch(url, {
-                method: "POST",
+                method,
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ movieId }),
+                body: JSON.stringify({ userId, movieId }),
             });
 
             if (!response.ok) {
@@ -67,18 +79,16 @@ const WatchlistPage: React.FC = () => {
             const data = await response.json();
             console.log("Watchlist updated:", data);
 
+            // Update the local state to reflect the change immediately
             setWatchlist((prev) =>
                 newStatus
-                    ? [...prev, data.movie] // Add the Movie object returned from API
-                    : prev.filter((movie) => movie.id !== movieId) // Remove by matching `id`
+                    ? [...prev, data.movie] // Add movie returned from the API
+                    : prev.filter((movie) => movie.id !== movieId) // Remove the movie from the watchlist
             );
         } catch (error) {
             console.error("Error updating watchlist:", error);
         }
     };
-
-
-
 
     return (
         <div className="min-h-screen bg-background">
@@ -96,7 +106,7 @@ const WatchlistPage: React.FC = () => {
                                 title={movie.title}
                                 poster_path={movie.poster_path}
                                 inWatchlist={watchlist.some((item) => item.id === movie.id)}
-                                onWatchlistToggle={handleWatchlistToggle} // Pass the function to toggle watchlist
+                                onWatchlistToggle={handleWatchlistToggle} // Pass function to toggle watchlist
                             />
                         ))}
                     </div>
@@ -107,7 +117,5 @@ const WatchlistPage: React.FC = () => {
         </div>
     );
 };
-
-
 
 export default WatchlistPage;

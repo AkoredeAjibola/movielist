@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/add", protectRoute, addToWatchlist);
 router.delete("/remove/:id", protectRoute, removeFromWatchlist);
-router.get("/", protectRoute, getWatchlist);
+router.get("/:userId", protectRoute, getWatchlist);
 
 
 export default router;
