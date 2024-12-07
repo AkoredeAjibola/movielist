@@ -112,21 +112,25 @@ export const MovieCard = ({
   };
 
   const handleWatchlistToggle = async (event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent click from navigating
-    const newStatus = !isInWatchlist; // Calculate new state
+    event.stopPropagation();
+    const newStatus = !isInWatchlist;
 
     // Optimistic UI update
     setIsInWatchlist(newStatus);
 
     try {
       const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId"); // Example logic for user ID
+      const userId = localStorage.getItem("userId");
+      if (!userId) throw new Error("User ID is missing. Please log in.");
 
       const url = newStatus
         ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
         : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`;
-
       const method = newStatus ? "POST" : "DELETE";
+
+      const body = newStatus
+        ? JSON.stringify({ userId, movieId: id, title, poster_path })
+        : JSON.stringify({ userId });
 
       const response = await fetch(url, {
         method,
@@ -134,26 +138,24 @@ export const MovieCard = ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ userId, movieId: id }),
+        body,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update watchlist");
-      }
+      if (!response.ok) throw new Error("Failed to update watchlist");
 
       const data = await response.json();
-      console.log("Watchlist updated:", data);
+      console.log("Watchlist response:", data);
 
-      // Notify parent about the change
-      onWatchlistToggle(id, newStatus);
+      onWatchlistToggle(id, newStatus); // Notify parent about the change
     } catch (error) {
-      console.error("Error toggling watchlist:", error);
+      console.error(error);
 
       // Rollback UI state on error
       setIsInWatchlist(!newStatus);
-      alert("Failed to update watchlist. Please try again.");
+      alert(error.message);
     }
   };
+
 
   return (
     <Card className="group relative overflow-hidden transition-all hover:scale-105">
