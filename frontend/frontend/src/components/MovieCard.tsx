@@ -122,7 +122,7 @@ export const MovieCard = ({
         ? "https://movielist-nl59.onrender.com/api/v1/watchlist/add"
         : `https://movielist-nl59.onrender.com/api/v1/watchlist/remove/${id}`;
 
-      const method = newStatus ? "PUT" : "DELETE"
+      const method = newStatus ? "POST" : "DELETE"
       const response = await fetch(url, {
         method,
         headers: {
@@ -168,8 +168,9 @@ export const MovieCard = ({
         </Button>
         <Button
           size="icon"
-          variant="secondary"
-          className="h-8 w-8"
+          variant="secondary" // Keep this fixed to an accepted value
+          className={`h-8 w-8 transition-colors ${isInWatchlist ? "bg-green-500 text-white" : "bg-gray-300 text-black"
+            }`}
           onClick={handleWatchlistToggle}
         >
           <Bookmark className={isInWatchlist ? "fill-current" : ""} />
