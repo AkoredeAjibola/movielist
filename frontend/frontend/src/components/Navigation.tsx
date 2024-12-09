@@ -126,6 +126,21 @@ export const Navigation = () => {
               <Clock className="h-4 w-4" />
               <span>Watch History</span>
             </Link>
+
+            <Link
+              to="/watchlist"
+              className={cn(
+                "flex items-center space-x-2 transition-colors hover:text-primary",
+                isActive("/watchhistory") ? "text-primary" : "text-muted-foreground"
+              )}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Bookmark className="h-4 w-4" />
+              <span>Watch List</span>
+            </Link>
+
+
+
             <Link
               to="/reminders"
               className={cn(
