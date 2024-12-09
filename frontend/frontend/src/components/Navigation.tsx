@@ -131,7 +131,7 @@ export const Navigation = () => {
               to="/watchlist"
               className={cn(
                 "flex items-center space-x-2 transition-colors hover:text-primary",
-                isActive("/watchhistory") ? "text-primary" : "text-muted-foreground"
+                isActive("/watchlist") ? "text-primary" : "text-muted-foreground"
               )}
               onClick={() => setIsMobileMenuOpen(false)}
             >
