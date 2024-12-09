@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon server.js",  
-    "start": "NODE_ENV=production node server.js",    
-    "build": "echo 'No build step for backend'"
+    "dev": "node init && NODE_ENV=development nodemon server.js",
+    "start": "node init && NODE_ENV=production node server.js",
+    "build": "node init && echo 'No build step for backend'"
   },
   "keywords": [],
   "author": "",

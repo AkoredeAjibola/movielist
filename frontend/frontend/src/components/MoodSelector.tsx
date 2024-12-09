@@ -9,9 +9,9 @@ interface MoodSelectorProps {
 
 const moods: { type: Mood; emoji: string; label: string }[] = [
   { type: "Happy", emoji: "😊", label: "Happy" },
-  { type: "Sad", emoji: "🌟", label: "Sad" },
+  { type: "Sad", emoji: "🤔", label: "Sad" },
   { type: "Romantic", emoji: "💖", label: "Romantic" },
-  { type: "Exciting", emoji: "🤔", label: "Exciting" },
+  { type: "Exciting", emoji: "🌟", label: "Exciting" },
   { type: "Thrilling", emoji: "🎉", label: "Thrilling" },
   { type: "Relaxing", emoji: "🎉", label: "Relaxing" },
 ];
