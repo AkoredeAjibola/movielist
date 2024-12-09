@@ -60,7 +60,6 @@ export const removeFromWatchlist = async (req, res) => {
 };
 
 // Get user's watchlist
-// Get Watchlist controller
 export const getWatchlist = async (req, res) => {
   try {
     const { userId } = req.params; // Get userId from the URL params

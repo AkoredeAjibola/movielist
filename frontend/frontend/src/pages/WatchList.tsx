@@ -32,8 +32,8 @@ const WatchlistPage: React.FC = () => {
                 },
             });
             const data = await response.json();
-            if (data.success) {
-                setWatchlist(data.content); // Assuming `data.content` holds the watchlist data
+            if (data.watchlist) {
+                setWatchlist(data.watchlist); // Assuming `data.content` holds the watchlist data
             }
         } catch (error) {
             console.error("Failed to fetch watchlist:", error);

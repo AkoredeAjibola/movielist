@@ -19,6 +19,8 @@ export const markAsWatched = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    user.streaks = user.streaks || 0;
+
     // Check streak logic
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to start of the day
@@ -29,9 +31,9 @@ export const markAsWatched = async (req, res) => {
 
       const diffDays = Math.floor((today - lastWatchedDate) / (1000 * 60 * 60 * 24));
 
-      if (diffDays === 1) {
-        // Increment streak if it’s the next day
+      if (lastWatchedDate && diffDays === 1 && user.lastWatchedDate.toDateString() !== today.toDateString()) {
         user.streaks += 1;
+      
       } else if (diffDays > 1) {
         // Reset streak if more than a day has passed
         user.streaks = 0;
